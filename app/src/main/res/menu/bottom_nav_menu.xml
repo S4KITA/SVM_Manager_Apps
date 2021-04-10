@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+            android:id="@+id/frag_navigation_board"
+            android:icon="@drawable/tabbar_story_selected_btn"
+            android:title="게시판"/>
+
+    <item
+            android:id="@+id/frag_navigation_home"
+            android:icon="@drawable/tabbar_home_selected_btn"
+            android:title="홈"/>
+
+    <item
+            android:id="@+id/frag_navigation_transaction"
+            android:icon="@drawable/tabbar_profile_selected_btn"
+            android:title="프로필"/>
+
+</menu>
