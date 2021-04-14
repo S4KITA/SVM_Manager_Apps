@@ -1,20 +1,499 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff">
 
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/topBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    >
+
+    <!--현재 날짜를 출력 -->
     <TextView
+        android:id="@+id/datenow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="음료 판매량 확인 프레그먼트"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        android:text="2021년 4월 12일 (월)"
+        android:textSize="20dp"
+        android:layout_margin="20dp"
+        app:layout_constraintStart_toStartOf="@+id/topBar"
+        app:layout_constraintTop_toTopOf="@+id/topBar"
+        app:layout_constraintBottom_toBottomOf="@id/topBar"/>
 
+    <!--자판기 선택해서 스피너로 구현 -->
+    <Spinner
+        android:id="@+id/vendingSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:entries="@array/자판기"
+        android:layout_marginLeft="10dp"
+        android:gravity="center"
+        app:layout_constraintStart_toEndOf="@+id/datenow"
+        app:layout_constraintTop_toTopOf="@+id/topBar"
+        app:layout_constraintBottom_toBottomOf="@id/topBar"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:id="@+id/scrollSVM"
+    app:layout_constraintTop_toBottomOf="@+id/topBar"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintVertical_bias="0.0"
+    >
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/mainlayout"
+        app:layout_constraintTop_toTopOf="@+id/scrollSVM"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/dateLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#EFEEEE"
+
+            app:layout_constraintTop_toTopOf="@id/mainlayout"
+            app:layout_constraintStart_toToptOf="@id/mainlayout"
+            app:layout_constraintTop_toBottomOf="@id/mainlayout">
+
+            <TextView
+                android:id="@+id/today"
+                android:layout_width="90dp"
+                android:layout_height="50dp"
+                android:background="@drawable/todaytextview"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/dateLayout"
+                app:layout_constraintEnd_toEndOf="@+id/dateLayout"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintHorizontal_bias="0.09"
+                android:gravity="center"
+                android:text="오늘"
+                android:textSize="25dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"/>
+
+            <TextView
+                android:id="@+id/week"
+                android:layout_width="90dp"
+                android:layout_height="50dp"
+                android:background="@drawable/toptextview"
+                app:layout_constraintStart_toEndOf="@+id/today"
+                app:layout_constraintTop_toTopOf="@+id/dateLayout"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="이번주"
+                android:textSize="25dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"/>
+
+            <TextView
+                android:id="@+id/month"
+                android:layout_width="90dp"
+                android:layout_height="50dp"
+                android:background="@drawable/toptextview"
+                app:layout_constraintStart_toEndOf="@+id/week"
+                app:layout_constraintTop_toTopOf="@+id/dateLayout"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="이번달"
+                android:textSize="25dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"/>
+
+            <!--달력모양 아이콘 이미지 넣기 누르면 달력 유무상태 확인  -->
+            <TextView
+                android:id="@+id/calender"
+                android:layout_width="90dp"
+                android:layout_height="50dp"
+                android:background="@drawable/caltextview"
+                app:layout_constraintStart_toEndOf="@+id/month"
+                app:layout_constraintTop_toTopOf="@+id/dateLayout"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="달력"
+                android:textSize="25dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"/>
+
+            <!--누르면 데이트피커 떠서 날짜 선택 -->
+            <TextView
+                android:id="@+id/firstcal"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:background="@drawable/datetextview"
+                app:layout_constraintBottom_toBottomOf="@+id/dateLayout"
+                app:layout_constraintTop_toBottomOf="@+id/today"
+                app:layout_constraintEnd_toEndOf="@id/dateLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHorizontal_bias="0.12"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:drawableLeft="@drawable/calender_icon"
+                android:drawablePadding="-10dp"
+                android:text="2021 - 04 - 13"
+                android:textSize="20dp"
+                />
+
+            <TextView
+                android:id="@+id/middlecal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/firstcal"
+                app:layout_constraintBottom_toBottomOf="@id/dateLayout"
+                android:text="~"
+                android:textSize="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                />
+
+            <!--누르면 데이트피커 떠서 날짜 선택 -->
+            <TextView
+                android:id="@+id/lastcal"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:background="@drawable/datetextview"
+                app:layout_constraintStart_toEndOf="@+id/middlecal"
+                app:layout_constraintBottom_toBottomOf="@id/dateLayout"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:drawableLeft="@drawable/calender_icon"
+                android:drawablePadding="-10dp"
+                android:text="2021 - 04 - 13"
+                android:textSize="20dp"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--달력 버튼 클릭시 화면에 보이게 함 여기에는 달력날짜마다 당일날의 총매출이 찍힐거임 -->
+        <CalendarView
+            android:id="@+id/calendershow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dateLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="gone"
+            />
+
+        <!-- 상단의 날짜기간을 정하면 나올 총 매출 현황 및 음료수 총 주문 건수 확인 레이아웃 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/Totalmoneylayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="#EFEEEE"
+            app:layout_constraintTop_toBottomOf="@id/calendershow"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/totalmoneytext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/Totalmoneylayout"
+                android:text="매출 현황"
+                android:textStyle="bold"
+                android:textSize="30dp"
+                android:layout_margin="20dp"/>
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#e3e3e3"
+                app:layout_constraintTop_toBottomOf="@id/totalmoneytext" />
+
+            <TextView
+                android:id="@+id/totalmoneytext2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/view2"
+                android:text="매출"
+                android:textColor="#054C85"
+                android:textStyle="bold"
+                android:textSize="30dp"
+                android:layout_margin="20dp"/>
+
+            <TextView
+                android:id="@+id/totalmoneyshow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/view2"
+                app:layout_constraintEnd_toEndOf="@+id/Totalmoneylayout"
+                android:text="260,300원"
+                android:textColor="#054C85"
+                android:textStyle="bold"
+                android:textSize="30dp"
+                android:layout_margin="20dp"/>
+
+            <TextView
+                android:id="@+id/totalmoneytext3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/totalmoneytext2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/Totalmoneylayout"
+                android:text="구매 건수"
+                android:textColor="#AE2D23"
+                android:textStyle="bold"
+                android:textSize="30dp"
+                android:layout_margin="20dp"
+                android:layout_marginBottom="30dp"/>
+
+            <TextView
+                android:id="@+id/totalnumbershow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/totalmoneyshow"
+                app:layout_constraintEnd_toEndOf="@+id/Totalmoneylayout"
+                android:text="2건"
+                android:textColor="#AE2D23"
+                android:textStyle="bold"
+                android:textSize="30dp"
+                android:layout_margin="20dp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/piechart"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_margin="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Totalmoneylayout"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/categori"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/piechart"
+            app:layout_constraintEnd_toStartOf="@+id/guensu"
+            app:layout_constraintHorizontal_bias="0.3"
+            android:text="카테고리"
+            android:textSize="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"/>
+
+        <TextView
+            android:id="@+id/guensu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/categori"
+            app:layout_constraintTop_toBottomOf="@+id/piechart"
+            app:layout_constraintEnd_toStartOf="@id/moneyshow"
+            android:text="건수"
+            android:textSize="20dp"
+            android:layout_margin="20dp" />
+
+        <TextView
+            android:id="@+id/moneyshow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/guensu"
+            app:layout_constraintTop_toBottomOf="@+id/piechart"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="금액"
+            android:textSize="20dp"
+            android:layout_margin="20dp"/>
+        <View
+            android:id="@+id/view1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="#e3e3e3"
+            app:layout_constraintTop_toBottomOf="@id/categori" />
+
+        <TextView
+            android:id="@+id/cocacola"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/view1"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="코카콜라"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/cidar"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/cocacola"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="사이다"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/fantaorange"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/cidar"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="환타 오렌지"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/mountindue"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/fantaorange"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="마운틴 듀"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/cocacolanum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/view1"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="12건"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            android:layout_marginRight="190dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/cocacolamoney"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/view1"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="20000원"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/cidarnum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintTop_toBottomOf="@+id/cocacolanum"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="123건"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            android:layout_marginRight="190dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/cidarmoney"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/cocacolamoney"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="200,00원"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/fantanum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/cidarnum"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="57건"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            android:layout_marginRight="190dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/fantamoney"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/cidarmoney"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="5700원"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/mountinduenum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/fantanum"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="8건"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            android:layout_marginRight="190dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/mountinduemoney"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/fantamoney"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="800원"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
