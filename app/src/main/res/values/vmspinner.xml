@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="자판기">
+    <string-array name="vending">
         <item>성결관 자판기</item>
         <item>재림관 자판기</item>
         <item>중생관 자판기</item>

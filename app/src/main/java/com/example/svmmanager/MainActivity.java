@@ -9,10 +9,12 @@ import com.example.svmmanager.fragment.BottomNavigationFragment1;
 import com.example.svmmanager.fragment.BottomNavigationFragment2;
 import com.example.svmmanager.fragment.BottomNavigationFragment3;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.DayViewFacade;
 
 public class MainActivity extends AppCompatActivity {
 
-    private BottomNavigationView bottomNavigationView;
+    public BottomNavigationView bottomNavigationView;
     BottomNavigationFragment1 fragment1;
     BottomNavigationFragment2 fragment2;
     BottomNavigationFragment3 fragment3;
