@@ -60,6 +60,7 @@ import java.util.concurrent.Executors;
 
 import static android.graphics.Typeface.*;
 
+//dd
 public class BottomNavigationFragment3 extends Fragment {
 
     String time,kcal,menu;
