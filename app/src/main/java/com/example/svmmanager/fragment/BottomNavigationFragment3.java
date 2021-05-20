@@ -2,6 +2,7 @@ package com.example.svmmanager.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -27,12 +28,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.motion.utils.Easing;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.svmmanager.R;
 import com.example.svmmanager.calender.EventDecorator;
 import com.example.svmmanager.calender.OneDayDecorator;
 import com.example.svmmanager.calender.SaturdayDecorator;
 import com.example.svmmanager.calender.SundayDecorator;
+import com.example.svmmanager.pay.PayAdapter;
+import com.example.svmmanager.pay.PayData;
 import com.example.svmmanager.piechart.CustomMarkerView;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
@@ -46,8 +52,17 @@ import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -105,10 +120,29 @@ public class BottomNavigationFragment3 extends Fragment {
 
     Date date1, date2;
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy - MM - dd");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+    //php데이터 출력 변수
+    int count = 0; // 건수 출력
+    int SVMtotalmoney=0; // 자판기 총 금액 변수
+    int SVMtotalcount=0; // 자판기 총 건수 변수
+    int cocatotalmoney = 0; // 코카콜라 총 금액 변수
+    int cidartotalmoney = 0; // 사이다 총 금액 변수
+    int fantatotalmoney = 0; // 환타 총 금액 변수
+    int mountintotalmoney = 0; // 마운틴듀 총 금액 변수
+    int cocacount=0; // 코카콜라 총 건수 변수
+    int cidarcount=0; // 사이다 총 건수 변수
+    int fantacount=0; // 환타 총 건수 변수
+    int mountincount=0; // 마운틴 듀 총 건수 변수
 
+    //php데이터 테스트
+    private static String IP_ADDRESS = "211.211.158.42/yongrun/svm";
+    private static String TAG = "phptest";
 
+    private ArrayList<PayData> mArrayList;
+    private PayAdapter mAdapter;
+    private RecyclerView mRecyclerView;
+    private String mJsonString;
 
 
     @Override
@@ -136,6 +170,29 @@ public class BottomNavigationFragment3 extends Fragment {
         fantamoney = (TextView) rootView.findViewById(R.id.fantamoney);
         mountinduenum = (TextView) rootView.findViewById(R.id.mountinduenum);
         mountinduemoney = (TextView) rootView.findViewById(R.id.mountinduemoney);
+
+
+//-----------PHP부분-----------------------------------------------------------------------------------------------------------------
+
+
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.mRecyclerView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        mArrayList = new ArrayList<>();
+
+        mAdapter = new PayAdapter(getActivity(), mArrayList);
+        mRecyclerView.setAdapter(mAdapter);
+
+        mArrayList.clear();
+        mAdapter.notifyDataSetChanged();
+
+        GetData task = new GetData();
+        task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
+
+        //FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        //transaction.detach(this).attach(this).commit();
+
+
 
 //-----------달력부분-----------------------------------------------------------------------------------------------------------------
         calendershow = (MaterialCalendarView) rootView.findViewById(R.id.calendershow);
@@ -182,7 +239,7 @@ public class BottomNavigationFragment3 extends Fragment {
         //스피너 리스너 토스트 메시지 출력
         vendingSpinner = (Spinner) rootView.findViewById(R.id.vendingSpinner);
         final String[] data = getResources().getStringArray(R.array.vending);
-        ArrayAdapter adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item,data);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item,data);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         vendingSpinner.setAdapter(adapter);
         //스피너 특접값으로 초기값 고정하고 싶다면
@@ -232,7 +289,7 @@ public class BottomNavigationFragment3 extends Fragment {
 
         Date firstnowdate = null;
         try {
-            firstnowdate = dateFormat.parse(cal.get(Calendar.YEAR)+" - "+ (cal.get(Calendar.MONTH)+1) + " - " + cal.get(Calendar.DATE));
+            firstnowdate = dateFormat.parse(cal.get(Calendar.YEAR)+"-"+ (cal.get(Calendar.MONTH)+1) + "-" + cal.get(Calendar.DATE));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -251,18 +308,21 @@ public class BottomNavigationFragment3 extends Fragment {
             @Override
             public void onClick(View view) {
 
-                DatePickerDialog beforedatePickerDialog = new DatePickerDialog(
+                DatePickerDialog lastdatePickerDialog = new DatePickerDialog(
                         getActivity(),
                         new DatePickerDialog.OnDateSetListener() {
                             public void onDateSet(DatePicker datePicker, int yy, int mm, int dd) {
                                 // Date Picker에서 선택한 날짜를 TextView에 설정
-                                firstcaldata = yy+" - "+(mm+1)+" - "+dd;
+                                firstcaldata = yy+"-"+(mm+1)+"-"+dd;
                                 y1=yy;
                                 m1=mm+1;
                                 d1=dd;
 
+                                Log.i("last datepicker",  "last datepicker");
+
+
                                 try {
-                                    date1 = dateFormat.parse(y1+" - " + m1+" - "+d1);
+                                    date1 = dateFormat.parse(y1+"-" + m1+"-"+d1);
 
                                 } catch (ParseException e) {
                                     e.printStackTrace();
@@ -297,6 +357,14 @@ public class BottomNavigationFragment3 extends Fragment {
                                     }else if(FirstDate.compareTo(SecondDate)==0){
                                         Toast.makeText(getActivity(), "오늘"+dateFormat.format(FirstDate)+"일의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
                                     }
+                                    mArrayList.clear();
+                                    mAdapter.notifyDataSetChanged();
+
+                                    GetData task = new GetData();
+                                    task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
+
+
+                                    System.out.println(count);
 
                                     long calDate = FirstDate.getTime() - SecondDate.getTime();
 
@@ -319,19 +387,22 @@ public class BottomNavigationFragment3 extends Fragment {
                         cal.get(Calendar.DATE)
                 );
 
-                DatePickerDialog afterdatePickerDialog = new DatePickerDialog(
+                DatePickerDialog firstdatePickerDialog = new DatePickerDialog(
                         getActivity(),
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int yy, int mm, int dd) {
                                 // Date Picker에서 선택한 날짜를 TextView에 설정
-                                lastcaldata = yy+" - "+(mm+1)+" - "+dd;
+                                lastcaldata = yy+"-"+(mm+1)+"-"+dd;
                                 y2=yy;
                                 m2=mm+1;
                                 d2=dd;
 
+                                Log.i("first datepicker",  "first datepicker");
+
+
                                 try {
-                                    date2 = dateFormat.parse(y2+" - " + m2 +" - "+d2);
+                                    date2 = dateFormat.parse(y2+"-" + m2 +"-"+d2);
 
                                 } catch (ParseException e) {
                                     e.printStackTrace();
@@ -345,6 +416,7 @@ public class BottomNavigationFragment3 extends Fragment {
                                 firstcal.setText(dateFormat.format(date2));
                                 //lastcal.setText(String.format("%d - %d - %d", yy,mm+1,dd));
 
+
                             }
                         },
                         cal.get(Calendar.YEAR),
@@ -355,10 +427,13 @@ public class BottomNavigationFragment3 extends Fragment {
                 cal=Calendar.getInstance();
                 //cal = cal.get(Calendar.YEAR)+" - "+ (cal.get(Calendar.MONTH)+1) + " - " + cal.get(Calendar.DATE);
                 //cal.set(cal.get(Calendar.YEAR)+" - "+ (cal.get(Calendar.MONTH)+1) + " - " + cal.get(Calendar.DATE));
-                beforedatePickerDialog.getDatePicker().setMaxDate(cal.getTimeInMillis());
-                afterdatePickerDialog.getDatePicker().setMaxDate(cal.getTimeInMillis());
-                beforedatePickerDialog.show();
-                afterdatePickerDialog.show();
+                lastdatePickerDialog.getDatePicker().setMaxDate(cal.getTimeInMillis());
+                firstdatePickerDialog.getDatePicker().setMaxDate(cal.getTimeInMillis());
+                lastdatePickerDialog.show();
+                firstdatePickerDialog.show();
+
+
+
 
             }
         });
@@ -374,14 +449,17 @@ public class BottomNavigationFragment3 extends Fragment {
                             @Override
                             public void onDateSet(DatePicker view, int yy, int mm, int dd) {
                                 // Date Picker에서 선택한 날짜를 TextView에 설정
-                                lastcaldata = yy+" - "+(mm+1)+" - "+dd;
+                                lastcaldata = yy+"-"+(mm+1)+"-"+dd;
                                 y2=yy;
                                 m2=mm+1;
                                 d2=dd;
 
 
+                                Log.i("first datepicker",  "first datepicker");
+
+
                                 try {
-                                    date2 = dateFormat.parse(y2+" - " + m2 +" - "+d2);
+                                    date2 = dateFormat.parse(y2+"-" + m2 +"-"+d2);
 
                                 } catch (ParseException e) {
                                     e.printStackTrace();
@@ -396,6 +474,8 @@ public class BottomNavigationFragment3 extends Fragment {
 
                                 lastcal.setText(dateFormat.format(date2));
                                 //lastcal.setText(String.format("%d - %d - %d", yy,mm+1,dd));
+
+
 
                                 Log.i("Year test",  calendar1+ " ### " +calendar2);
 
@@ -419,6 +499,15 @@ public class BottomNavigationFragment3 extends Fragment {
                                         Toast.makeText(getActivity(), "오늘"+dateFormat.format(FirstDate)+"일의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
                                     }
 
+                                    mArrayList.clear();
+                                    mAdapter.notifyDataSetChanged();
+
+                                    GetData task = new GetData();
+                                    task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
+
+
+                                    System.out.println(count);
+
                                     long calDate = FirstDate.getTime() - SecondDate.getTime();
 
                                     // Date.getTime() 은 해당날짜를 기준으로1970년 00:00:00 부터 몇 초가 흘렀는지를 반환해준다.
@@ -439,6 +528,8 @@ public class BottomNavigationFragment3 extends Fragment {
                         cal.get(Calendar.MONTH),
                         cal.get(Calendar.DAY_OF_MONTH)
                 );
+
+
 
                 cal=Calendar.getInstance();
                 afterdatePickerDialog.getDatePicker().setMaxDate(cal.getTimeInMillis());
@@ -520,6 +611,12 @@ public class BottomNavigationFragment3 extends Fragment {
             @Override
             public void onClick(View view) {
 
+                mArrayList.clear();
+                mAdapter.notifyDataSetChanged();
+
+                GetData task = new GetData();
+                task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
+
                //today.setBackgroundColor(getContext().getResources().getColor(R.drawable.todaytextview2));
 
                 //클릭시 배경색 변경
@@ -541,8 +638,8 @@ public class BottomNavigationFragment3 extends Fragment {
 
                //날짜 변경
                 try {
-                    firstcal.setText(dateFormat.format(dateFormat.parse(cal.get(Calendar.YEAR)+" - " +(cal.get(Calendar.MONTH)+1)+ " - " + cal.get(Calendar.DATE))));
-                    lastcal.setText(dateFormat.format(dateFormat.parse(cal.get(Calendar.YEAR)+" - " +(cal.get(Calendar.MONTH)+1)+ " - " + cal.get(Calendar.DATE))));
+                    firstcal.setText(dateFormat.format(dateFormat.parse(cal.get(Calendar.YEAR)+"-" +(cal.get(Calendar.MONTH)+1)+ "-" + cal.get(Calendar.DATE))));
+                    lastcal.setText(dateFormat.format(dateFormat.parse(cal.get(Calendar.YEAR)+"-" +(cal.get(Calendar.MONTH)+1)+ "-" + cal.get(Calendar.DATE))));
                     Toast.makeText(getActivity(), "오늘의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -557,6 +654,12 @@ public class BottomNavigationFragment3 extends Fragment {
         month.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                mArrayList.clear();
+                mAdapter.notifyDataSetChanged();
+
+                GetData task = new GetData();
+                task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
 
                 //클릭시 배경색 변경
                 month.setBackgroundResource(R.drawable.toptextview2);
@@ -579,8 +682,8 @@ public class BottomNavigationFragment3 extends Fragment {
                 //날짜 변경
 
                 try {
-                    firstcal.setText(dateFormat.format(dateFormat.parse(cal.get(Calendar.YEAR)+" - " +(cal.get(Calendar.MONTH)+1)+ " - " + "01")));
-                    lastcal.setText(dateFormat.format(dateFormat.parse(cal.get(Calendar.YEAR)+" - " +(cal.get(Calendar.MONTH)+1)+ " - " + cal.get(Calendar.DATE))));
+                    firstcal.setText(dateFormat.format(dateFormat.parse(cal.get(Calendar.YEAR)+"-" +(cal.get(Calendar.MONTH)+1)+ "-" + "01")));
+                    lastcal.setText(dateFormat.format(dateFormat.parse(cal.get(Calendar.YEAR)+"-" +(cal.get(Calendar.MONTH)+1)+ "-" + cal.get(Calendar.DATE))));
                     Toast.makeText(getActivity(), firstcal.getText()+"~"+lastcal.getText()+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -594,6 +697,12 @@ public class BottomNavigationFragment3 extends Fragment {
         year.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                mArrayList.clear();
+                mAdapter.notifyDataSetChanged();
+
+                GetData task = new GetData();
+                task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
 
                 //클릭시 배경색 변경
                 year.setBackgroundResource(R.drawable.toptextview2);
@@ -614,8 +723,8 @@ public class BottomNavigationFragment3 extends Fragment {
 
 
                 try {
-                    firstcal.setText(dateFormat.format(dateFormat.parse(cal.get(Calendar.YEAR)+" - " +"01"+ " - " + "01")));
-                    lastcal.setText(dateFormat.format(dateFormat.parse(cal.get(Calendar.YEAR)+" - " +(cal.get(Calendar.MONTH)+1)+ " - " + cal.get(Calendar.DATE))));
+                    firstcal.setText(dateFormat.format(dateFormat.parse(cal.get(Calendar.YEAR)+"-" +"01"+ "-" + "01")));
+                    lastcal.setText(dateFormat.format(dateFormat.parse(cal.get(Calendar.YEAR)+"-" +(cal.get(Calendar.MONTH)+1)+ "-" + cal.get(Calendar.DATE))));
                     Toast.makeText(getActivity(), firstcal.getText()+"~"+lastcal.getText()+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -632,30 +741,47 @@ public class BottomNavigationFragment3 extends Fragment {
             @Override
             public void onClick(View view) {
 
-                //클릭시 배경색 변경
-                calender.setBackgroundResource(R.drawable.caltextview2);
-                calender.setTextColor(Color.parseColor("#465088"));
-                calender.setTypeface(null, BOLD);
 
-                year.setBackgroundResource(R.drawable.toptextview);
-                year.setTextColor(Color.parseColor("#9E9E9E"));
-                year.setTypeface(null, NORMAL);
-
-                today.setBackgroundResource(R.drawable.todaytextview);
-                today.setTextColor(Color.parseColor("#9E9E9E"));
-                today.setTypeface(null, NORMAL);
-
-                month.setBackgroundResource(R.drawable.toptextview);
-                month.setTextColor(Color.parseColor("#9E9E9E"));
-                month.setTypeface(null, NORMAL);
 
                 //캘린더뷰 출력하기 안보이는거 다시 보이게하기
                 //calendershow.setVisibility(view.VISIBLE);
                 if (calendershow.getVisibility() == view.GONE){
                     calendershow.setVisibility(view.VISIBLE);
+                    //클릭시 배경색 변경
+                    calender.setBackgroundResource(R.drawable.caltextview2);
+                    calender.setTextColor(Color.parseColor("#465088"));
+                    calender.setTypeface(null, BOLD);
+
+                    year.setBackgroundResource(R.drawable.toptextview);
+                    year.setTextColor(Color.parseColor("#9E9E9E"));
+                    year.setTypeface(null, NORMAL);
+
+                    today.setBackgroundResource(R.drawable.todaytextview);
+                    today.setTextColor(Color.parseColor("#9E9E9E"));
+                    today.setTypeface(null, NORMAL);
+
+                    month.setBackgroundResource(R.drawable.toptextview);
+                    month.setTextColor(Color.parseColor("#9E9E9E"));
+                    month.setTypeface(null, NORMAL);
                     //transAnimation(true);
                 }else{
                     calendershow.setVisibility(view.GONE);
+                    //클릭시 배경색 변경
+                    calender.setBackgroundResource(R.drawable.caltextview);
+                    calender.setTextColor(Color.parseColor("#9E9E9E"));
+                    calender.setTypeface(null, BOLD);
+
+                    year.setBackgroundResource(R.drawable.toptextview);
+                    year.setTextColor(Color.parseColor("#9E9E9E"));
+                    year.setTypeface(null, NORMAL);
+
+                    today.setBackgroundResource(R.drawable.todaytextview);
+                    today.setTextColor(Color.parseColor("#9E9E9E"));
+                    today.setTypeface(null, NORMAL);
+
+                    month.setBackgroundResource(R.drawable.toptextview);
+                    month.setTextColor(Color.parseColor("#9E9E9E"));
+                    month.setTypeface(null, NORMAL);
                     //transAnimation(false);
                 }
 
@@ -758,6 +884,306 @@ public class BottomNavigationFragment3 extends Fragment {
 
     }
 //----------------------------------------------------------------------------------------------------------------------------
+private class GetData extends AsyncTask<String, Void, String> {
+
+    ProgressDialog progressDialog;
+    String errorString = null;
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+
+        progressDialog = ProgressDialog.show(getActivity(), "Please Wait", null, true, true);
+    }
+
+
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+
+        progressDialog.dismiss();
+
+        Log.d(TAG, "response - " + result);
+
+        if (result == null) {
+
+        } else {
+
+            mJsonString = result;
+            showResult();
+
+            count = 0; // 건수 출력
+            SVMtotalmoney=0; // 자판기 총 금액 변수
+            SVMtotalcount=0; // 자판기 총 건수 변수
+            cocatotalmoney = 0; // 코카콜라 총 금액 변수
+            cidartotalmoney = 0; // 사이다 총 금액 변수
+            fantatotalmoney = 0; // 환타 총 금액 변수
+            mountintotalmoney = 0; // 마운틴듀 총 금액 변수
+            cocacount=0; // 코카콜라 총 건수 변수
+            cidarcount=0; // 사이다 총 건수 변수
+            fantacount=0; // 환타 총 건수 변수
+            mountincount=0; // 마운틴 듀 총 건수 변수
+
+        }
+    }
+
+
+    @Override
+    protected String doInBackground(String... params) {
+
+        String serverURL = params[0];
+        String postParameters = params[1];
+        Log.d(TAG, "response code - test");
+
+
+
+        try {
+
+            URL url = new URL(serverURL);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+
+
+            httpURLConnection.setReadTimeout(5000);
+            httpURLConnection.setConnectTimeout(5000);
+            httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.setDoInput(true);
+            httpURLConnection.connect();
+
+
+            OutputStream outputStream = httpURLConnection.getOutputStream();
+            outputStream.write(postParameters.getBytes("UTF-8"));
+            outputStream.flush();
+            outputStream.close();
+
+
+            int responseStatusCode = httpURLConnection.getResponseCode();
+            Log.d(TAG, "response code - " + responseStatusCode);
+
+            InputStream inputStream;
+            if (responseStatusCode == HttpURLConnection.HTTP_OK) {
+                inputStream = httpURLConnection.getInputStream();
+            } else {
+                inputStream = httpURLConnection.getErrorStream();
+            }
+
+
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            StringBuilder sb = new StringBuilder();
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+
+            bufferedReader.close();
+
+            return sb.toString().trim();
+
+
+        } catch (Exception e) {
+
+            Log.d(TAG, "GetData : Error ", e);
+            errorString = e.toString();
+
+            return null;
+        }
+
+    }
+}
+
+    private void showResult() {
+
+        String TAG_JSON = "TransactionDetails_DATA";
+        String TAG_TD_TRCODE = "TD_TRCODE";
+        String TAG_TD_TRDATE = "TD_TRDATE";
+        String TAG_TD_VMCODE = "TD_VMCODE";
+        String TAG_TD_DRCODE = "TD_DRCODE";
+
+
+        try {
+            JSONObject jsonObject = new JSONObject(mJsonString);
+            JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+
+                JSONObject item = jsonArray.getJSONObject(i);
+
+                String TD_TRCODE = item.getString(TAG_TD_TRCODE);
+                String TD_TRDATE = item.getString(TAG_TD_TRDATE);
+                String TD_VMCODE = item.getString(TAG_TD_VMCODE);
+                String TD_DRCODE = item.getString(TAG_TD_DRCODE);
+
+                //TD_TRDATE.substring(0, 9);
+
+
+                PayData personalData = new PayData();
+
+                personalData.setTD_TRCODE(TD_TRCODE);
+                personalData.setTD_TRDATE(TD_TRDATE);
+                personalData.setTD_VMCODE(TD_VMCODE);
+                personalData.setTD_DRCODE(TD_DRCODE);
+
+                mArrayList.add(personalData);
+                mAdapter.notifyDataSetChanged();
+
+
+
+                //오늘 매출
+                /*
+                    int SVMtotalmoney=0;
+                    int SVMtotalcount=0;
+                    int cocamoney = 0;
+                    int cidarmoney = 0;
+                    int fantamoney = 0;
+                    int mountinmoney = 0;
+                    int cocacount=0;
+                    int cidarcount=0;
+                    int fantacount=0;
+                    int mountincount=0;
+*/
+                String date1 = String.valueOf(firstcal.getText());
+                String date2 = String.valueOf(lastcal.getText());
+
+                try {
+                    Date FirDate = dateFormat.parse(date1);
+                    Date SecDate = dateFormat.parse(date2);
+
+                    Date tagetDate=dateFormat.parse(TD_TRDATE.substring(0,TD_TRDATE.indexOf(" ")));
+
+                    if (FirDate.getTime()<= tagetDate.getTime() && tagetDate.getTime() <= SecDate.getTime()){
+                        if(TD_DRCODE.equals("CocaCola")){
+                            cocatotalmoney = cocatotalmoney+1200;
+                            cocacount = cocacount +1;
+                        }else if (TD_DRCODE.equals("Chilsung Cider")){
+                            cidartotalmoney = cidartotalmoney+1100;
+                            cidarcount = cidarcount +1;
+                        }else if (TD_DRCODE.equals("Fanta Orange")){
+                            fantatotalmoney = fantatotalmoney+1000;
+                            fantacount = fantacount +1;
+                        }else if (TD_DRCODE.equals("Mountain Dew")){
+                            mountintotalmoney = mountintotalmoney+1500;
+                            mountincount = mountincount +1;
+                        }
+                        SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
+                        SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+
+                        totalmoneyshow.setText(SVMtotalmoney+"원");
+                        totalnumbershow.setText(SVMtotalcount+"건");
+                        cocacolamoney.setText(cocatotalmoney + "원");
+                        cidarmoney.setText(cidartotalmoney + "원");
+                        fantamoney.setText(fantatotalmoney + "원");
+                        mountinduemoney.setText(mountintotalmoney + "원");
+
+                        cocacolanum.setText(cocacount+"건");
+                        cidarnum.setText(cidarcount+"건");
+                        fantanum.setText(fantacount+"건");
+                        mountinduenum.setText(mountincount+"건");
+                    }else{
+                        totalmoneyshow.setText(0+"원");
+                        totalnumbershow.setText(0+"건");
+
+                        cocacolamoney.setText(0 + "원");
+                        cidarmoney.setText(0 + "원");
+                        fantamoney.setText(0 + "원");
+                        mountinduemoney.setText(0 + "원");
+
+                        cocacolanum.setText(0+"건");
+                        cidarnum.setText(0+"건");
+                        fantanum.setText(0+"건");
+                        mountinduenum.setText(0+"건");
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+
+
+/*
+                    if(mArrayList.get(i).getTD_TRDATE().substring(0,TD_TRDATE.indexOf(" ")).equals(firstcal.getText()) && mArrayList.get(i).getTD_DRCODE().equals("CocaCola")){
+                        cocatotalmoney = cocatotalmoney+1200;
+                        cocacount = cocacount +1;
+                    }else if (mArrayList.get(i).getTD_TRDATE().substring(0,TD_TRDATE.indexOf(" ")).equals(firstcal.getText()) && mArrayList.get(i).getTD_DRCODE().equals("Chilsung Cider")){
+                        cidartotalmoney = cidartotalmoney+1100;
+                        cidarcount = cidarcount +1;
+                    }else if (mArrayList.get(i).getTD_TRDATE().substring(0,TD_TRDATE.indexOf(" ")).equals(firstcal.getText()) && mArrayList.get(i).getTD_DRCODE().equals("Chilsung Cider")){
+                        fantatotalmoney = fantatotalmoney+1000;
+                        fantacount = fantacount +1;
+                    }else if (mArrayList.get(i).getTD_TRDATE().substring(0,TD_TRDATE.indexOf(" ")).equals(firstcal.getText()) && mArrayList.get(i).getTD_DRCODE().equals("Chilsung Cider")){
+                        mountintotalmoney = mountintotalmoney+1500;
+                        mountincount = mountincount +1;
+                    }
+
+                    SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
+                    SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+
+*/
+                    System.out.println();
+                    System.out.println(i+" 번째 : "+SVMtotalmoney);
+                    System.out.println(i+" 번째 : "+SVMtotalcount);
+
+
+
+/*
+                //출력 switch 문
+                switch (mArrayList.get(i).getDRCode()) {
+                    case "CocaCola":
+                        mTextViewCocacolaPrice.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
+                        mTextViewCocacolaStock.setText("수량 : " + mArrayList.get(i).getDRStock() + " 개");
+                        break;
+
+                    case "Chilsung Cider":
+                        mTextViewChilsungPrice.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
+                        mTextViewChilsungStock.setText("수량 : " + mArrayList.get(i).getDRStock() + " 개");
+                        break;
+
+                    case "Ssekssek":
+                        mTextViewSsekssekPrice.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
+                        mTextViewSsekssekStock.setText("수량 : " + mArrayList.get(i).getDRStock() + " 개");
+                        break;
+
+                    case "Fanta Orange":
+                        mTextViewFantaPrice.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
+                        mTextViewFantaStock.setText("수량 : " + mArrayList.get(i).getDRStock() + " 개");
+                        break;
+
+                    case "Mountain Dew":
+                        mTextViewMountainPrice.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
+                        mTextViewMountainStock.setText("수량: " + mArrayList.get(i).getDRStock() + " 개");
+                        break;
+
+                    case "Galbae":
+                        mTextViewGalbaePrice.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
+                        mTextViewGalbaeStock.setText("수량: " + mArrayList.get(i).getDRStock() + " 개");
+                        break;
+
+                    default:
+                        break;
+
+
+                }
+*/
+
+                Log.i("testtest",   TD_TRCODE +" / " +   TD_TRDATE.substring(0, TD_TRDATE.indexOf(" ")) +" / " + TD_VMCODE +" / " + TD_DRCODE);
+
+
+            }
+/*
+            cocacolamoney.setText(cocatotalmoney);
+            cidarmoney.setText(cidartotalmoney);
+            fantamoney.setText(fantatotalmoney);
+            mountinduemoney.setText(mountintotalmoney);
+*/
+
+
+        } catch (JSONException e) {
+
+            Log.d(TAG, "showResult : ", e);
+        }
+
+    }
 
 
 //----------------------------------------------------------------------------------------------------------------------------
