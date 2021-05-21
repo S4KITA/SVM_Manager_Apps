@@ -546,62 +546,6 @@ public class BottomNavigationFragment3 extends Fragment {
 
         pieChart = (PieChart) rootView.findViewById(R.id.piechart);
 
-        pieChart.setUsePercentValues(true);
-        pieChart.getDescription().setEnabled(false);
-        pieChart.setExtraOffsets(5,10,5,5);
-
-        pieChart.setDragDecelerationFrictionCoef(0.95f);
-
-        pieChart.setDrawHoleEnabled(false);
-        pieChart.setHoleColor(Color.WHITE);
-        pieChart.setTransparentCircleRadius(61f);
-
-        //pieChart.invalidate(); //차드 새로고침 메소드
-
-        ArrayList<PieEntry> yValues = new ArrayList<PieEntry>();
-
-        yValues.add(new PieEntry(25f,"코카콜라"));
-        yValues.add(new PieEntry(25f,"사이다"));
-        yValues.add(new PieEntry(25f,"환타"));
-        yValues.add(new PieEntry(25f,"마운틴 듀"));
-
-        Description description = new Description();
-        description.setText("카테고리 별 분석"); //라벨
-        description.setTextSize(18);
-        description.setTypeface(Typeface.defaultFromStyle(BOLD));
-        description.setTextColor(Color.parseColor("#465088"));
-        description.setPosition(500,90);
-        pieChart.setDescription(description);
-
-
-        pieChart.animateY(1000, com.github.mikephil.charting.animation.Easing.EaseInOutCubic);
-        //pieChart.animateY(1000, Easing.EasingOption.EaseInOutCubic); //애니메이션
-
-
-        PieDataSet dataSet = new PieDataSet(yValues,"");
-        dataSet.setSliceSpace(3f);
-        dataSet.setSelectionShift(10f);
-        dataSet.setValueTextColor(Color.parseColor("#465088"));
-        dataSet.setColors(ColorTemplate.JOYFUL_COLORS); //고정색깔 나오게 하기
-
-        //랜덤색 나오게 하는 로직
-        Random random = new Random();
-        int color[] = new int[40];
-        for(int i=0;i<40;i++){
-            color[i] = Color.rgb(random.nextInt(255),random.nextInt(255),random.nextInt(255));
-        }
-
-        //dataSet.setColors(ColorTemplate.createColors(color)); //랜덤색깔 나오게 하기
-
-        PieData piedata = new PieData((dataSet));
-        piedata.setValueTextSize(15f);
-        piedata.setValueTextColor(Color.parseColor("#465088"));
-
-        pieChart.setData(piedata);
-
-        CustomMarkerView mv = new CustomMarkerView(getActivity(), R.layout.custom_marker_view_layout); //마커 나오게 하는 코드
-        pieChart.setMarkerView(mv);
-
 
         //카테고리별 음료수 출력
 
@@ -911,6 +855,67 @@ private class GetData extends AsyncTask<String, Void, String> {
 
             mJsonString = result;
             showResult();
+
+
+            pieChart.setUsePercentValues(true);
+            pieChart.getDescription().setEnabled(false);
+            pieChart.setExtraOffsets(5,10,5,5);
+
+            pieChart.setDragDecelerationFrictionCoef(0.95f);
+
+            pieChart.setDrawHoleEnabled(false);
+            pieChart.setHoleColor(Color.WHITE);
+            pieChart.setTransparentCircleRadius(61f);
+
+            //pieChart.invalidate(); //차드 새로고침 메소드
+
+            ArrayList<PieEntry> yValues = new ArrayList<PieEntry>();
+
+
+            Log.i("countnum", String.valueOf(cocacount));
+
+            yValues.add(new PieEntry(cocacount,"코카콜라"));
+            yValues.add(new PieEntry(cidarcount,"사이다"));
+            yValues.add(new PieEntry(fantacount,"환타"));
+            yValues.add(new PieEntry(mountincount,"마운틴 듀"));
+
+            Description description = new Description();
+            description.setText("카테고리 별 분석"); //라벨
+            description.setTextSize(18);
+            description.setTypeface(Typeface.defaultFromStyle(BOLD));
+            description.setTextColor(Color.parseColor("#465088"));
+            description.setPosition(500,90);
+            pieChart.setDescription(description);
+
+
+            pieChart.animateY(1000, com.github.mikephil.charting.animation.Easing.EaseInOutCubic);
+            //pieChart.animateY(1000, Easing.EasingOption.EaseInOutCubic); //애니메이션
+
+
+            PieDataSet dataSet = new PieDataSet(yValues,"");
+            dataSet.setSliceSpace(3f);
+            dataSet.setSelectionShift(10f);
+            dataSet.setValueTextColor(Color.parseColor("#465088"));
+            dataSet.setColors(ColorTemplate.JOYFUL_COLORS); //고정색깔 나오게 하기
+
+            //랜덤색 나오게 하는 로직
+            Random random = new Random();
+            int color[] = new int[40];
+            for(int i=0;i<40;i++){
+                color[i] = Color.rgb(random.nextInt(255),random.nextInt(255),random.nextInt(255));
+            }
+
+            //dataSet.setColors(ColorTemplate.createColors(color)); //랜덤색깔 나오게 하기
+
+            PieData piedata = new PieData((dataSet));
+            piedata.setValueTextSize(15f);
+            piedata.setValueTextColor(Color.parseColor("#465088"));
+
+            pieChart.setData(piedata);
+
+            CustomMarkerView mv = new CustomMarkerView(getActivity(), R.layout.custom_marker_view_layout); //마커 나오게 하는 코드
+            pieChart.setMarkerView(mv);
+
 
             count = 0; // 건수 출력
             SVMtotalmoney=0; // 자판기 총 금액 변수
