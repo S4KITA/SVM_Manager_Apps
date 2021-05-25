@@ -26,7 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.motion.utils.Easing;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,11 +39,23 @@ import com.example.svmmanager.calender.SundayDecorator;
 import com.example.svmmanager.pay.PayAdapter;
 import com.example.svmmanager.pay.PayData;
 import com.example.svmmanager.piechart.CustomMarkerView;
+import com.example.svmmanager.piechart.MyValueFormatter;
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
+import com.github.mikephil.charting.formatter.DefaultValueFormatter;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.LargeValueFormatter;
+import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.formatter.StackedValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.CalendarMode;
@@ -176,7 +187,7 @@ public class BottomNavigationFragment3 extends Fragment {
 
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.mRecyclerView);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        //mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mArrayList = new ArrayList<>();
 
@@ -250,7 +261,14 @@ public class BottomNavigationFragment3 extends Fragment {
         vendingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(getActivity(),data[i],Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),data[i]+"의 매출을 보여줍니다.",Toast.LENGTH_SHORT).show();
+                mArrayList.clear();
+                mAdapter.notifyDataSetChanged();
+
+                GetData task = new GetData();
+                task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
+
+                System.out.println(count);
             }
 
             @Override
@@ -826,6 +844,8 @@ public class BottomNavigationFragment3 extends Fragment {
             calendershow.addDecorator(new EventDecorator(Color.RED, calendarDays, BottomNavigationFragment3.this));
         }
 
+
+
     }
 //----------------------------------------------------------------------------------------------------------------------------
 private class GetData extends AsyncTask<String, Void, String> {
@@ -857,9 +877,11 @@ private class GetData extends AsyncTask<String, Void, String> {
             showResult();
 
 
-            pieChart.setUsePercentValues(true);
+            pieChart.setUsePercentValues(true); //true로 퍼센트 설정, 개수만 보여줄라면 false하면 됨
             pieChart.getDescription().setEnabled(false);
             pieChart.setExtraOffsets(5,10,5,5);
+
+
 
             pieChart.setDragDecelerationFrictionCoef(0.95f);
 
@@ -867,28 +889,36 @@ private class GetData extends AsyncTask<String, Void, String> {
             pieChart.setHoleColor(Color.WHITE);
             pieChart.setTransparentCircleRadius(61f);
 
-            //pieChart.invalidate(); //차드 새로고침 메소드
+            pieChart.setTransparentCircleColor(Color.BLACK);
 
+            pieChart.setNoDataText("해당되는 매출이 없습니다.");
+            //pieChart.setNoDataTextColor(Color.parseColor("#465088"));
+
+            pieChart.setEntryLabelColor(Color.BLACK); //엔트리 이름 컬러
+            pieChart.setEntryLabelTypeface(defaultFromStyle(BOLD));
+
+            //pieChart.invalidate(); //차드 새로고침 메소드
+            //Legend i = pieChart.getLegend();
             ArrayList<PieEntry> yValues = new ArrayList<PieEntry>();
 
 
             Log.i("countnum", String.valueOf(cocacount));
 
-            yValues.add(new PieEntry(cocacount,"코카콜라"));
-            yValues.add(new PieEntry(cidarcount,"사이다"));
-            yValues.add(new PieEntry(fantacount,"환타"));
-            yValues.add(new PieEntry(mountincount,"마운틴 듀"));
+            yValues.add(new PieEntry(Math.round(cocacount),"코카콜라"));
+            yValues.add(new PieEntry(Math.round(cidarcount),"사이다"));
+            yValues.add(new PieEntry(Math.round(fantacount),"환타"));
+            yValues.add(new PieEntry(Math.round(mountincount),"마운틴 듀"));
 
             Description description = new Description();
             description.setText("카테고리 별 분석"); //라벨
             description.setTextSize(18);
-            description.setTypeface(Typeface.defaultFromStyle(BOLD));
+            description.setTypeface(defaultFromStyle(BOLD));
             description.setTextColor(Color.parseColor("#465088"));
             description.setPosition(500,90);
             pieChart.setDescription(description);
 
 
-            pieChart.animateY(1000, com.github.mikephil.charting.animation.Easing.EaseInOutCubic);
+            pieChart.animateY(1000, Easing.EaseInOutCubic);
             //pieChart.animateY(1000, Easing.EasingOption.EaseInOutCubic); //애니메이션
 
 
@@ -909,12 +939,19 @@ private class GetData extends AsyncTask<String, Void, String> {
 
             PieData piedata = new PieData((dataSet));
             piedata.setValueTextSize(15f);
-            piedata.setValueTextColor(Color.parseColor("#465088"));
+            piedata.setValueTextColor(Color.parseColor("#465088")); //숫자 퍼센트 데이터 컬러
 
             pieChart.setData(piedata);
 
-            CustomMarkerView mv = new CustomMarkerView(getActivity(), R.layout.custom_marker_view_layout); //마커 나오게 하는 코드
-            pieChart.setMarkerView(mv);
+            //piedata.setValueFormatter(new MyValueFormatter());
+
+            //piedata.setValueFormatter(new DefaultValueFormatter(0)); //소수점 없에는거
+            piedata.setValueFormatter(new PercentFormatter()); //소수점 첫째자리
+            //piedata.setValueFormatter(new IndexAxisValueFormatter()); //숫자 없에는거
+            //piedata.setValueFormatter(new DefaultAxisValueFormatter(1));
+
+            //CustomMarkerView mv = new CustomMarkerView(getActivity(), R.layout.custom_marker_view_layout); //마커 나오게 하는 코드
+            //pieChart.setMarkerView(mv);
 
 
             count = 0; // 건수 출력
@@ -1020,9 +1057,6 @@ private class GetData extends AsyncTask<String, Void, String> {
                 String TD_VMCODE = item.getString(TAG_TD_VMCODE);
                 String TD_DRCODE = item.getString(TAG_TD_DRCODE);
 
-                //TD_TRDATE.substring(0, 9);
-
-
                 PayData personalData = new PayData();
 
                 personalData.setTD_TRCODE(TD_TRCODE);
@@ -1034,58 +1068,159 @@ private class GetData extends AsyncTask<String, Void, String> {
                 mAdapter.notifyDataSetChanged();
 
 
-
-                //오늘 매출
-                /*
-                    int SVMtotalmoney=0;
-                    int SVMtotalcount=0;
-                    int cocamoney = 0;
-                    int cidarmoney = 0;
-                    int fantamoney = 0;
-                    int mountinmoney = 0;
-                    int cocacount=0;
-                    int cidarcount=0;
-                    int fantacount=0;
-                    int mountincount=0;
-*/
-                String date1 = String.valueOf(firstcal.getText());
-                String date2 = String.valueOf(lastcal.getText());
+                String date11 = String.valueOf(firstcal.getText());
+                String date22 = String.valueOf(lastcal.getText());
 
                 try {
-                    Date FirDate = dateFormat.parse(date1);
-                    Date SecDate = dateFormat.parse(date2);
+                    //데이트피커 firstcal과 lastcal에서 선택된 값을 시간값으로 바꾸기위해 그 시간값을 getTime으로 값으로 바꾸어 비교한다.
+                    Date FirDate = dateFormat.parse(date11);
+                    Date SecDate = dateFormat.parse(date22);
 
-                    Date tagetDate=dateFormat.parse(TD_TRDATE.substring(0,TD_TRDATE.indexOf(" ")));
+                    Date tagetDate=dateFormat.parse(TD_TRDATE);
+                    String vendingitem =  vendingSpinner.getSelectedItem().toString();
 
-                    if (FirDate.getTime()<= tagetDate.getTime() && tagetDate.getTime() <= SecDate.getTime()){
-                        if(TD_DRCODE.equals("CocaCola")){
-                            cocatotalmoney = cocatotalmoney+1200;
-                            cocacount = cocacount +1;
-                        }else if (TD_DRCODE.equals("Chilsung Cider")){
-                            cidartotalmoney = cidartotalmoney+1100;
-                            cidarcount = cidarcount +1;
-                        }else if (TD_DRCODE.equals("Fanta Orange")){
-                            fantatotalmoney = fantatotalmoney+1000;
-                            fantacount = fantacount +1;
-                        }else if (TD_DRCODE.equals("Mountain Dew")){
-                            mountintotalmoney = mountintotalmoney+1500;
-                            mountincount = mountincount +1;
-                        }
-                        SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
-                        SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+                    Log.i("vmspinner", vendingitem);
+                    Log.i("vmspinner", TD_VMCODE);
+                    Log.i("vmspinner", TD_TRDATE);
 
-                        totalmoneyshow.setText(SVMtotalmoney+"원");
-                        totalnumbershow.setText(SVMtotalcount+"건");
-                        cocacolamoney.setText(cocatotalmoney + "원");
-                        cidarmoney.setText(cidartotalmoney + "원");
-                        fantamoney.setText(fantatotalmoney + "원");
-                        mountinduemoney.setText(mountintotalmoney + "원");
+                    //for문을 통하여 배열의 크기만큼 하나씩 돌때 스피너 선택된 값을 불러와서 스위치문을 통하여 조건문 실행
+                    switch (vendingitem){
+                        case "성결관 자판기": //스위치 조건문중 성결관 자판기일때
+                            //만약 php파일에서 VMCODE값이 해당값과 같을때를 비교하고
+                            //그다음 TRDATE값이 첫번째 데이트타임에서 설정된 시간보다 크거나 같을때와 두번재 데이트타임에서 설정된 시간보다 작거나 같을때를 비교하여 조건문을 실행한다.
+                            //조건문에서는 각 음료 카테고리의 건수와 금액을 누적한다.
+                            if (TD_VMCODE.equals("SKU001") && (FirDate.getTime()<= tagetDate.getTime() && tagetDate.getTime() <= SecDate.getTime())){
+                                if(TD_DRCODE.equals("CocaCola")){
+                                    cocatotalmoney = cocatotalmoney+1200;
+                                    cocacount = cocacount +1;
+                                }else if (TD_DRCODE.equals("Chilsung Cider")){
+                                    cidartotalmoney = cidartotalmoney+1100;
+                                    cidarcount = cidarcount +1;
+                                }else if (TD_DRCODE.equals("Fanta Orange")){
+                                    fantatotalmoney = fantatotalmoney+1000;
+                                    fantacount = fantacount +1;
+                                }else if (TD_DRCODE.equals("Mountain Dew")){
+                                    mountintotalmoney = mountintotalmoney+1500;
+                                    mountincount = mountincount +1;
+                                }
+                                //총금액과 총건수를 각 음료의 금액과 건수로 합친다.
+                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
+                                SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
 
-                        cocacolanum.setText(cocacount+"건");
-                        cidarnum.setText(cidarcount+"건");
-                        fantanum.setText(fantacount+"건");
-                        mountinduenum.setText(mountincount+"건");
-                    }else{
+                            }
+                            break;
+
+                        case "재림관 자판기":
+                            if (TD_VMCODE.equals("SKU002") && (FirDate.getTime()<= tagetDate.getTime() && tagetDate.getTime() <= SecDate.getTime())){
+                                if(TD_DRCODE.equals("CocaCola")){
+                                    cocatotalmoney = cocatotalmoney+1200;
+                                    cocacount = cocacount +1;
+                                }else if (TD_DRCODE.equals("Chilsung Cider")){
+                                    cidartotalmoney = cidartotalmoney+1100;
+                                    cidarcount = cidarcount +1;
+                                }else if (TD_DRCODE.equals("Fanta Orange")){
+                                    fantatotalmoney = fantatotalmoney+1000;
+                                    fantacount = fantacount +1;
+                                }else if (TD_DRCODE.equals("Mountain Dew")){
+                                    mountintotalmoney = mountintotalmoney+1500;
+                                    mountincount = mountincount +1;
+                                }
+                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
+                                SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+
+                            }
+                            break;
+
+                        case "중생관 자판기":
+                            if (TD_VMCODE.equals("SKU003") && (FirDate.getTime()<= tagetDate.getTime() && tagetDate.getTime() <= SecDate.getTime())){
+                                if(TD_DRCODE.equals("CocaCola")){
+                                    cocatotalmoney = cocatotalmoney+1200;
+                                    cocacount = cocacount +1;
+                                }else if (TD_DRCODE.equals("Chilsung Cider")){
+                                    cidartotalmoney = cidartotalmoney+1100;
+                                    cidarcount = cidarcount +1;
+                                }else if (TD_DRCODE.equals("Fanta Orange")){
+                                    fantatotalmoney = fantatotalmoney+1000;
+                                    fantacount = fantacount +1;
+                                }else if (TD_DRCODE.equals("Mountain Dew")){
+                                    mountintotalmoney = mountintotalmoney+1500;
+                                    mountincount = mountincount +1;
+                                }
+                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
+                                SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+
+                            }
+                            break;
+
+                        case "영암관 자판기":
+                            if (TD_VMCODE.equals("SKU004") && (FirDate.getTime()<= tagetDate.getTime() && tagetDate.getTime() <= SecDate.getTime())){
+                                if(TD_DRCODE.equals("CocaCola")){
+                                    cocatotalmoney = cocatotalmoney+1200;
+                                    cocacount = cocacount +1;
+                                }else if (TD_DRCODE.equals("Chilsung Cider")){
+                                    cidartotalmoney = cidartotalmoney+1100;
+                                    cidarcount = cidarcount +1;
+                                }else if (TD_DRCODE.equals("Fanta Orange")){
+                                    fantatotalmoney = fantatotalmoney+1000;
+                                    fantacount = fantacount +1;
+                                }else if (TD_DRCODE.equals("Mountain Dew")){
+                                    mountintotalmoney = mountintotalmoney+1500;
+                                    mountincount = mountincount +1;
+                                }
+                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
+                                SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+
+                            }
+                            break;
+
+                        case "학생회관 자판기":
+                            if (TD_VMCODE.equals("SKU005") && (FirDate.getTime()<= tagetDate.getTime() && tagetDate.getTime() <= SecDate.getTime())){
+                                if(TD_DRCODE.equals("CocaCola")){
+                                    cocatotalmoney = cocatotalmoney+1200;
+                                    cocacount = cocacount +1;
+                                }else if (TD_DRCODE.equals("Chilsung Cider")){
+                                    cidartotalmoney = cidartotalmoney+1100;
+                                    cidarcount = cidarcount +1;
+                                }else if (TD_DRCODE.equals("Fanta Orange")){
+                                    fantatotalmoney = fantatotalmoney+1000;
+                                    fantacount = fantacount +1;
+                                }else if (TD_DRCODE.equals("Mountain Dew")){
+                                    mountintotalmoney = mountintotalmoney+1500;
+                                    mountincount = mountincount +1;
+                                }
+                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
+                                SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+
+                            }
+                            break;
+
+                        case "학술정보관 자판기":
+                            if (TD_VMCODE.equals("SKU006") && (FirDate.getTime()<= tagetDate.getTime() && tagetDate.getTime() <= SecDate.getTime())){
+                                if(TD_DRCODE.equals("CocaCola")){
+                                    cocatotalmoney = cocatotalmoney+1200;
+                                    cocacount = cocacount +1;
+                                }else if (TD_DRCODE.equals("Chilsung Cider")){
+                                    cidartotalmoney = cidartotalmoney+1100;
+                                    cidarcount = cidarcount +1;
+                                }else if (TD_DRCODE.equals("Fanta Orange")){
+                                    fantatotalmoney = fantatotalmoney+1000;
+                                    fantacount = fantacount +1;
+                                }else if (TD_DRCODE.equals("Mountain Dew")){
+                                    mountintotalmoney = mountintotalmoney+1500;
+                                    mountincount = mountincount +1;
+                                }
+                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
+                                SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    //Layout 보여주는 부분 변경사항
+                    if( SVMtotalmoney == 0 ){
                         totalmoneyshow.setText(0+"원");
                         totalnumbershow.setText(0+"건");
 
@@ -1098,89 +1233,30 @@ private class GetData extends AsyncTask<String, Void, String> {
                         cidarnum.setText(0+"건");
                         fantanum.setText(0+"건");
                         mountinduenum.setText(0+"건");
+                    }else if( SVMtotalmoney != 0 ){
+                        totalmoneyshow.setText(SVMtotalmoney+"원");
+                        totalnumbershow.setText(SVMtotalcount+"건");
+                        cocacolamoney.setText(cocatotalmoney + "원");
+                        cidarmoney.setText(cidartotalmoney + "원");
+                        fantamoney.setText(fantatotalmoney + "원");
+                        mountinduemoney.setText(mountintotalmoney + "원");
+
+                        cocacolanum.setText(cocacount+"건");
+                        cidarnum.setText(cidarcount+"건");
+                        fantanum.setText(fantacount+"건");
+                        mountinduenum.setText(mountincount+"건");
                     }
+
 
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
 
 
-
-/*
-                    if(mArrayList.get(i).getTD_TRDATE().substring(0,TD_TRDATE.indexOf(" ")).equals(firstcal.getText()) && mArrayList.get(i).getTD_DRCODE().equals("CocaCola")){
-                        cocatotalmoney = cocatotalmoney+1200;
-                        cocacount = cocacount +1;
-                    }else if (mArrayList.get(i).getTD_TRDATE().substring(0,TD_TRDATE.indexOf(" ")).equals(firstcal.getText()) && mArrayList.get(i).getTD_DRCODE().equals("Chilsung Cider")){
-                        cidartotalmoney = cidartotalmoney+1100;
-                        cidarcount = cidarcount +1;
-                    }else if (mArrayList.get(i).getTD_TRDATE().substring(0,TD_TRDATE.indexOf(" ")).equals(firstcal.getText()) && mArrayList.get(i).getTD_DRCODE().equals("Chilsung Cider")){
-                        fantatotalmoney = fantatotalmoney+1000;
-                        fantacount = fantacount +1;
-                    }else if (mArrayList.get(i).getTD_TRDATE().substring(0,TD_TRDATE.indexOf(" ")).equals(firstcal.getText()) && mArrayList.get(i).getTD_DRCODE().equals("Chilsung Cider")){
-                        mountintotalmoney = mountintotalmoney+1500;
-                        mountincount = mountincount +1;
-                    }
-
-                    SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
-                    SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
-
-*/
-                    System.out.println();
-                    System.out.println(i+" 번째 : "+SVMtotalmoney);
-                    System.out.println(i+" 번째 : "+SVMtotalcount);
-
-
-
-/*
-                //출력 switch 문
-                switch (mArrayList.get(i).getDRCode()) {
-                    case "CocaCola":
-                        mTextViewCocacolaPrice.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
-                        mTextViewCocacolaStock.setText("수량 : " + mArrayList.get(i).getDRStock() + " 개");
-                        break;
-
-                    case "Chilsung Cider":
-                        mTextViewChilsungPrice.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
-                        mTextViewChilsungStock.setText("수량 : " + mArrayList.get(i).getDRStock() + " 개");
-                        break;
-
-                    case "Ssekssek":
-                        mTextViewSsekssekPrice.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
-                        mTextViewSsekssekStock.setText("수량 : " + mArrayList.get(i).getDRStock() + " 개");
-                        break;
-
-                    case "Fanta Orange":
-                        mTextViewFantaPrice.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
-                        mTextViewFantaStock.setText("수량 : " + mArrayList.get(i).getDRStock() + " 개");
-                        break;
-
-                    case "Mountain Dew":
-                        mTextViewMountainPrice.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
-                        mTextViewMountainStock.setText("수량: " + mArrayList.get(i).getDRStock() + " 개");
-                        break;
-
-                    case "Galbae":
-                        mTextViewGalbaePrice.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
-                        mTextViewGalbaeStock.setText("수량: " + mArrayList.get(i).getDRStock() + " 개");
-                        break;
-
-                    default:
-                        break;
-
-
-                }
-*/
-
-                Log.i("testtest",   TD_TRCODE +" / " +   TD_TRDATE.substring(0, TD_TRDATE.indexOf(" ")) +" / " + TD_VMCODE +" / " + TD_DRCODE);
+                Log.i("testtest",   TD_TRCODE +" / " +   TD_TRDATE +" / " + TD_VMCODE +" / " + TD_DRCODE);
 
 
             }
-/*
-            cocacolamoney.setText(cocatotalmoney);
-            cidarmoney.setText(cidartotalmoney);
-            fantamoney.setText(fantatotalmoney);
-            mountinduemoney.setText(mountintotalmoney);
-*/
 
 
         } catch (JSONException e) {
