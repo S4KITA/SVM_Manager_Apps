@@ -23,6 +23,7 @@ public class SaturdayDecorator implements DayViewDecorator {
         return weekDay == Calendar.SATURDAY;
     }
 
+    //매주 토요일 날짜에 글씨색을 파란색으로 설정하기 위해
     @Override
     public void decorate(DayViewFacade view) {
         view.addSpan(new ForegroundColorSpan(Color.BLUE));

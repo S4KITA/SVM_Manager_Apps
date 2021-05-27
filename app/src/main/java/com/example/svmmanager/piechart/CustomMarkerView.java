@@ -22,18 +22,19 @@ public class CustomMarkerView extends MarkerView {
     // content (user-interface)
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
+        //마커뷰에 보여질 텍스트 값을 지정해준다.
         tvContent.setText("" + e.getData()); // set the entry-value as the display text
     }
 
 
     public int getXOffset(float xpos) {
-        // this will center the marker-view horizontally
+        // 마커 뷰가 보여질 x위치값을 리턴
         return -(getWidth() / 2);
     }
 
 
     public int getYOffset(float ypos) {
-        // this will cause the marker-view to be above the selected value
+        // 마커 뷰가 보여질 y위치값을 리턴
         return -getHeight();
     }
 }

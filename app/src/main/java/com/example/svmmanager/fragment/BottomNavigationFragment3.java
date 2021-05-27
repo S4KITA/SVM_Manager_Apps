@@ -7,8 +7,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +21,6 @@ import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -31,6 +32,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.applandeo.materialcalendarview.CalendarView;
+import com.applandeo.materialcalendarview.EventDay;
 import com.example.svmmanager.R;
 import com.example.svmmanager.calender.EventDecorator;
 import com.example.svmmanager.calender.OneDayDecorator;
@@ -89,18 +92,17 @@ import static android.graphics.Typeface.*;
 //dd
 public class BottomNavigationFragment3 extends Fragment {
 
-    String time,kcal,menu;
-
+    //자판기 음료 원형서킷으로 보여주기 위한 변수
     PieChart pieChart;
 
     //날짜 비교하기 위한 변수
     String firstcaldata, lastcaldata;
 
+    //데이트 피커에서 날짜를 담기 위한 변수
     int y1,m1,d1,y2,m2,d2;
 
-    //달력 총금액 출력하기 위해 필요한 메소드
+    //달력에 총금액 출력하기 위해 필요한 메소드
     private final OneDayDecorator oneDayDecorator = new OneDayDecorator();
-    Cursor cursor;
 
     //화면 맨 상단에 당일 날짜 출력 변수
     TextView datenow;
@@ -123,14 +125,20 @@ public class BottomNavigationFragment3 extends Fragment {
     //스피너로 인한 자판기 출력 변수
     Spinner vendingSpinner;
 
+
     //달력 버튼 클릭시 달력 보이게 하기 위한 변수
+    CalendarView calendershow2;
     MaterialCalendarView calendershow;
+
+    //날짜를 가져와서 초기화함
     Calendar cal = Calendar.getInstance();
 
-    Calendar calendar1, calendar2;
 
+    //날짜를 비교하기 위해 필요한 변수
+    Calendar calendar1, calendar2;
     Date date1, date2;
 
+    //날짜데이터를 담기위해 날짜데이터형식을 지정
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     //php데이터 출력 변수
@@ -146,10 +154,11 @@ public class BottomNavigationFragment3 extends Fragment {
     int fantacount=0; // 환타 총 건수 변수
     int mountincount=0; // 마운틴 듀 총 건수 변수
 
-    //php데이터 테스트
-    private static String IP_ADDRESS = "211.211.158.42/yongrun/svm";
-    private static String TAG = "phptest";
+    //php데이터
+    private static String IP_ADDRESS = "211.211.158.42/yongrun/svm"; //php파일 주소
+    private static String TAG = "phptest"; //log test
 
+    //php파일의 데이터를 담을 변수들들
     private ArrayList<PayData> mArrayList;
     private PayAdapter mAdapter;
     private RecyclerView mRecyclerView;
@@ -158,21 +167,27 @@ public class BottomNavigationFragment3 extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //viewGroup변수를 통해서 프래그먼트에 레이아웃 배치
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_bottomnavigation3, container, false);
 
+        //오늘 날짜를 보여주게하는 변수
         datenow = (TextView) rootView.findViewById(R.id.datenow);
 
+        //datelayout에 배치되는 변수들 오늘,월별,기간별,달력 textview
         today = (TextView) rootView.findViewById(R.id.today);
         month = (TextView) rootView.findViewById(R.id.month);
         year = (TextView) rootView.findViewById(R.id.year);
         calender = (TextView) rootView.findViewById(R.id.calender);
 
+        //기간별 출력을 하기 위해 필요한 변수 누르면 데이트피커를 통해 보여주게함
         firstcal = (TextView) rootView.findViewById(R.id.firstcal);
         lastcal = (TextView) rootView.findViewById(R.id.lastcal);
 
+        //총금액과 총건수를 보여주는 변수
         totalmoneyshow = (TextView) rootView.findViewById(R.id.totalmoneyshow);
         totalnumbershow = (TextView) rootView.findViewById(R.id.totalnumbershow);
 
+        //카테고리별 금액과 건수 변수
         cocacolanum = (TextView) rootView.findViewById(R.id.cocacolanum);
         cocacolamoney = (TextView) rootView.findViewById(R.id.cocacolamoney);
         cidarmoney = (TextView) rootView.findViewById(R.id.cidarmoney);
@@ -185,18 +200,21 @@ public class BottomNavigationFragment3 extends Fragment {
 
 //-----------PHP부분-----------------------------------------------------------------------------------------------------------------
 
-
+        //데이터를 받아오기 위해 리사이클러뷰 선언
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.mRecyclerView);
         //mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        //php데이터들을 배열을 통해 받아오기위해 ArrayList를 선언
         mArrayList = new ArrayList<>();
 
+        //PayAdapter를 불러와서 php데이터가 담겨있는 ArrayList를 정의한다.
         mAdapter = new PayAdapter(getActivity(), mArrayList);
         mRecyclerView.setAdapter(mAdapter);
 
         mArrayList.clear();
         mAdapter.notifyDataSetChanged();
 
+        //GetData클래스를 생성하여 php파일의 주소로 연동을 한다.
         GetData task = new GetData();
         task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
 
@@ -204,10 +222,13 @@ public class BottomNavigationFragment3 extends Fragment {
         //transaction.detach(this).attach(this).commit();
 
 
+        //calendershow2 = (CalendarView) rootView.findViewById(R.id.calenershow2);
+
 
 //-----------달력부분-----------------------------------------------------------------------------------------------------------------
         calendershow = (MaterialCalendarView) rootView.findViewById(R.id.calendershow);
 
+        //캘린더뷰를 디자인하는 부분
         calendershow.state().edit()
                 .setFirstDayOfWeek(Calendar.SUNDAY)
                 .setMinimumDate(CalendarDay.from(1970, 0, 1))
@@ -215,6 +236,7 @@ public class BottomNavigationFragment3 extends Fragment {
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit();
 
+        //캘린더 뷰를 이벤트를 주는 부분 SundayDecorator(), SaturdayDecorator(), oneDayDecorator 메소드를 불러와서 토요일 일요일 해당요일 해당하는 이벤트를 정의한다.
         calendershow.addDecorators(
                 new SundayDecorator(),
                 new SaturdayDecorator(),
@@ -223,8 +245,10 @@ public class BottomNavigationFragment3 extends Fragment {
         //오늘 날짜 불러오기 위한 변수
         String[] result = {String.valueOf(cal.get(Calendar.YEAR))+","+String.valueOf((cal.get(Calendar.MONTH)+1))+","+String.valueOf(cal.get(Calendar.DATE)) };
 
+        //ApiSimulator클래스를 불러와 result변수에 담겨있는 요일에 해당하는 이벤트를 발생시킨다.
         new ApiSimulator(result).executeOnExecutor(Executors.newSingleThreadExecutor());
 
+        //달력의 날짜를 클릭하면 나오는 이벤트
         calendershow.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
@@ -241,6 +265,7 @@ public class BottomNavigationFragment3 extends Fragment {
                 Log.i("shot_Day test", shot_Day + "");
                 calendershow.clearSelection();
 
+                //해당날짜를 클릭하면 클릭한 날짜의 년,월,일의 메시지를 토스트 메시지로 출력을 한다.
                 Toast.makeText(getActivity(), shot_Day , Toast.LENGTH_SHORT).show();
             }
         });
@@ -258,6 +283,7 @@ public class BottomNavigationFragment3 extends Fragment {
 
         //vendingSpinner.getSelectedItem().toString(); //스피너 선택값 가져오는 방법
 
+        //스피너를 선택을하게 되면 발생하는 이벤트 리스너
         vendingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -265,6 +291,7 @@ public class BottomNavigationFragment3 extends Fragment {
                 mArrayList.clear();
                 mAdapter.notifyDataSetChanged();
 
+                //php파일을 불러옴
                 GetData task = new GetData();
                 task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
 
@@ -305,6 +332,7 @@ public class BottomNavigationFragment3 extends Fragment {
                 break;
         }
 
+        //dateFormat형식으로 오늘날짜를 지정
         Date firstnowdate = null;
         try {
             firstnowdate = dateFormat.parse(cal.get(Calendar.YEAR)+"-"+ (cal.get(Calendar.MONTH)+1) + "-" + cal.get(Calendar.DATE));
@@ -319,13 +347,13 @@ public class BottomNavigationFragment3 extends Fragment {
         firstcal.setText(dateFormat.format(firstnowdate));
         lastcal.setText(dateFormat.format(firstnowdate));
 
-//----------------------------------------------------------------------------------------------------------------------------
+//-----------데이트 피커를 활용한 날짜 설정-----------------------------------------------------------------------------------------------------------------
 
-        //데이트 피커를 활용한 날짜 설정
+        //firstcal을 클릭시 발생하는 이벤트 리스너 클릭하면 데이트피커를 보여줌
         firstcal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //lastcal에 설정될 datepicker리스너 두번째 기간별 선택하기 위한 리스너
                 DatePickerDialog lastdatePickerDialog = new DatePickerDialog(
                         getActivity(),
                         new DatePickerDialog.OnDateSetListener() {
@@ -339,6 +367,7 @@ public class BottomNavigationFragment3 extends Fragment {
                                 Log.i("last datepicker",  "last datepicker");
 
 
+                                //dateFormat형식으로 지정하기 위해 날짜를 dateFormat에 담아놈
                                 try {
                                     date1 = dateFormat.parse(y1+"-" + m1+"-"+d1);
 
@@ -346,16 +375,19 @@ public class BottomNavigationFragment3 extends Fragment {
                                     e.printStackTrace();
                                 }
 
+                                //지정한 날짜를 calendar1에 담아놓음
                                 calendar1 = Calendar.getInstance();
                                 calendar1.set(Calendar.YEAR, y1);
                                 calendar1.set(Calendar.MONTH, m1);
                                 calendar1.set(Calendar.DAY_OF_MONTH, d1);
 
+                                //지정한 날짜를 lastcal의 텍스트로 변경을함
                                 lastcal.setText(dateFormat.format(date1));
                                 //firstcal.setText(String.format("%d - %d - %d", yy,mm+1,dd));
 
                                 Log.i("Year test",  calendar1+ " ### " +calendar2);
 
+                                //만약 달력의 기간이 오류가 나거나 앞뒤 기간을 다시 확인하기 위해 필요한 로직들
                                 String exdate1 = String.valueOf(firstcal.getText());
                                 String exdate2 = String.valueOf(lastcal.getText());
                                 Log.i("Year test",  exdate1+ " ### " +exdate2);
@@ -364,15 +396,16 @@ public class BottomNavigationFragment3 extends Fragment {
                                     Date FirstDate = dateFormat.parse(exdate1);
                                     Date SecondDate = dateFormat.parse(exdate2);
                                     Log.i("test",  FirstDate+ " ### " +SecondDate);
-
-                                    if (FirstDate.compareTo(SecondDate)>0){
+                                    //compareTo()메소드를 통해 날짜 비교를 구현
+                                    if (FirstDate.compareTo(SecondDate)>0){ //fisetDate가 SecondDate보다 값이 크면 1을 반환하게됨
+                                        //첫번째 날짜 값이 두번째 날짜값보다 크기에, 오류 토스트메시지를 출력하며 두개의 날짜 값을 다시 변경하여 조정한다.
                                         firstcal.setText(dateFormat.format(date1));
                                         lastcal.setText(dateFormat.format(date2));
                                         Toast.makeText(getActivity(), "달력의 앞뒤 기간을 다시 확인해주십시오.\n"
                                                 +firstcal.getText()+"~"+lastcal.getText()+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
-                                    }else if (FirstDate.compareTo(SecondDate)<0){
+                                    }else if (FirstDate.compareTo(SecondDate)<0){ //fisetDate가 SecondDate보다 값이 작으면 -1을 반환하게됨 정상적으로 출력
                                         Toast.makeText(getActivity(), dateFormat.format(FirstDate)+"~"+dateFormat.format(SecondDate)+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
-                                    }else if(FirstDate.compareTo(SecondDate)==0){
+                                    }else if(FirstDate.compareTo(SecondDate)==0){ //fisetDate가 SecondDate보다 값이 같으면 오늘 날짜를 출력하는것
                                         Toast.makeText(getActivity(), "오늘"+dateFormat.format(FirstDate)+"일의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
                                     }
                                     mArrayList.clear();
@@ -384,8 +417,8 @@ public class BottomNavigationFragment3 extends Fragment {
 
                                     System.out.println(count);
 
+                                    //두 날짜간의 날짜 차이를 출력하기 위한 변수
                                     long calDate = FirstDate.getTime() - SecondDate.getTime();
-
                                     // Date.getTime() 은 해당날짜를 기준으로1970년 00:00:00 부터 몇 초가 흘렀는지를 반환해준다.
                                     // 이제 24*60*60*1000(각 시간값에 따른 차이점) 을 나눠주면 일수가 나온다.
                                     long calDateDays = calDate / ( 24*60*60*1000);
@@ -405,6 +438,7 @@ public class BottomNavigationFragment3 extends Fragment {
                         cal.get(Calendar.DATE)
                 );
 
+                //firstcal에 설정될 datepicker리스너 첫번째 기간별 선택하기 위한 리스너
                 DatePickerDialog firstdatePickerDialog = new DatePickerDialog(
                         getActivity(),
                         new DatePickerDialog.OnDateSetListener() {
@@ -418,7 +452,7 @@ public class BottomNavigationFragment3 extends Fragment {
 
                                 Log.i("first datepicker",  "first datepicker");
 
-
+                                //dateFormat형식으로 지정하기 위해 날짜를 dateFormat에 담아놈
                                 try {
                                     date2 = dateFormat.parse(y2+"-" + m2 +"-"+d2);
 
@@ -431,6 +465,7 @@ public class BottomNavigationFragment3 extends Fragment {
                                 calendar2.set(Calendar.MONTH, m2);
                                 calendar2.set(Calendar.DAY_OF_MONTH, d2);
 
+                                //지정한 날짜를 firstcal의 텍스트로 변경을함
                                 firstcal.setText(dateFormat.format(date2));
                                 //lastcal.setText(String.format("%d - %d - %d", yy,mm+1,dd));
 
@@ -445,8 +480,11 @@ public class BottomNavigationFragment3 extends Fragment {
                 cal=Calendar.getInstance();
                 //cal = cal.get(Calendar.YEAR)+" - "+ (cal.get(Calendar.MONTH)+1) + " - " + cal.get(Calendar.DATE);
                 //cal.set(cal.get(Calendar.YEAR)+" - "+ (cal.get(Calendar.MONTH)+1) + " - " + cal.get(Calendar.DATE));
+
+                //오늘날짜보다 뒤의 날짜는 비활성화함
                 lastdatePickerDialog.getDatePicker().setMaxDate(cal.getTimeInMillis());
                 firstdatePickerDialog.getDatePicker().setMaxDate(cal.getTimeInMillis());
+                //각 정의한 데이트다이얼로그를 보여줌
                 lastdatePickerDialog.show();
                 firstdatePickerDialog.show();
 
@@ -457,10 +495,12 @@ public class BottomNavigationFragment3 extends Fragment {
         });
 
 
+        //lastcal을 클릭시 보여주는 이벤트 리스너 클릭하면 데이트 피커를 보여줌
         lastcal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                //lastcal을 변경하기 위한, 날짜를 지정하기 위한 데이트피커를 정의함
                 DatePickerDialog afterdatePickerDialog = new DatePickerDialog(
                         getActivity(),
                         new DatePickerDialog.OnDateSetListener() {
@@ -475,7 +515,7 @@ public class BottomNavigationFragment3 extends Fragment {
 
                                 Log.i("first datepicker",  "first datepicker");
 
-
+                                //dateFormat형식으로 지정하기 위해 날짜를 dateFormat에 담아놈
                                 try {
                                     date2 = dateFormat.parse(y2+"-" + m2 +"-"+d2);
 
@@ -490,6 +530,7 @@ public class BottomNavigationFragment3 extends Fragment {
                                 calendar2.set(Calendar.MONTH, m2);
                                 calendar2.set(Calendar.DAY_OF_MONTH, d2);
 
+                                //지정한 날짜를 lastcal 텍스트로 변경을함
                                 lastcal.setText(dateFormat.format(date2));
                                 //lastcal.setText(String.format("%d - %d - %d", yy,mm+1,dd));
 
@@ -506,26 +547,30 @@ public class BottomNavigationFragment3 extends Fragment {
                                     Date SecondDate = dateFormat.parse(exdate2);
                                     Log.i("test",  FirstDate+ " ### " +SecondDate);
 
-                                    if (FirstDate.compareTo(SecondDate)>0){
+                                    //compareTo()메소드를 통해 날짜를 비교함
+                                    if (FirstDate.compareTo(SecondDate)>0){//fisetDate가 SecondDate보다 값이 크면 1을 반환하게됨
+                                        //첫번째 날짜 값이 두번째 날짜값보다 크기에, 오류 토스트메시지를 출력하며 두개의 날짜 값을 다시 변경하여 조정한다.
                                         lastcal.setText(firstcal.getText());
                                         firstcal.setText(dateFormat.format(date2));
                                         Toast.makeText(getActivity(), "달력의 앞뒤 기간을 다시 확인해주십시오.\n"
                                                 +firstcal.getText()+"~"+lastcal.getText()+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
-                                    }else if (FirstDate.compareTo(SecondDate)<0){
+                                    }else if (FirstDate.compareTo(SecondDate)<0){ //fisetDate가 SecondDate보다 값이 작으면 -1을 반환하게됨 정상적으로 출력
                                         Toast.makeText(getActivity(), dateFormat.format(FirstDate)+"~"+dateFormat.format(SecondDate)+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
-                                    }else if(FirstDate.compareTo(SecondDate)==0){
+                                    }else if(FirstDate.compareTo(SecondDate)==0){ //fisetDate가 SecondDate보다 값이 같으면 오늘 날짜를 출력하는것
                                         Toast.makeText(getActivity(), "오늘"+dateFormat.format(FirstDate)+"일의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
                                     }
 
                                     mArrayList.clear();
                                     mAdapter.notifyDataSetChanged();
 
+                                    //날짜를 선택 완료하면 다시 php파일을 불러옴
                                     GetData task = new GetData();
                                     task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
 
 
                                     System.out.println(count);
 
+                                    //두 날짜간의 날짜 차이를 출력하는 변수
                                     long calDate = FirstDate.getTime() - SecondDate.getTime();
 
                                     // Date.getTime() 은 해당날짜를 기준으로1970년 00:00:00 부터 몇 초가 흘렀는지를 반환해준다.
@@ -550,22 +595,17 @@ public class BottomNavigationFragment3 extends Fragment {
 
 
                 cal=Calendar.getInstance();
+                ///오늘날짜 뒤의 날짜는 비활성화함
                 afterdatePickerDialog.getDatePicker().setMaxDate(cal.getTimeInMillis());
-                afterdatePickerDialog.show();
+                afterdatePickerDialog.show();// 다이얼로그를 불러옴
 
 
             }
         });
 
-
-        //매출관리
-
         //원형서킷 출력
-
         pieChart = (PieChart) rootView.findViewById(R.id.piechart);
 
-
-        //카테고리별 음료수 출력
 
         //일별, 월별, 년별, 기간별, 달력 버튼 클릭시 나오게하는 이벤트
         today.setOnClickListener(new View.OnClickListener() {
@@ -576,6 +616,7 @@ public class BottomNavigationFragment3 extends Fragment {
                 mArrayList.clear();
                 mAdapter.notifyDataSetChanged();
 
+                //php파일 불러옴
                 GetData task = new GetData();
                 task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
 
@@ -620,6 +661,7 @@ public class BottomNavigationFragment3 extends Fragment {
                 mArrayList.clear();
                 mAdapter.notifyDataSetChanged();
 
+                //php파일 불러옴
                 GetData task = new GetData();
                 task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
 
@@ -663,6 +705,7 @@ public class BottomNavigationFragment3 extends Fragment {
                 mArrayList.clear();
                 mAdapter.notifyDataSetChanged();
 
+                //php파일 불러옴
                 GetData task = new GetData();
                 task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
 
@@ -760,6 +803,7 @@ public class BottomNavigationFragment3 extends Fragment {
 
 
 
+    //달력을 보이게 하고 안보이게 하는 애니메이션 메소드
     private void transAnimation(boolean bool){
         AnimationSet aniInSet = new AnimationSet(true);
         AnimationSet aniOutSet = new AnimationSet(true);
@@ -841,13 +885,14 @@ public class BottomNavigationFragment3 extends Fragment {
                 return;
             }
 */
+            //addDecorator를 활용하여 EventDecorator에서 정의한 도트를 해당 날짜에 정의한다.
             calendershow.addDecorator(new EventDecorator(Color.RED, calendarDays, BottomNavigationFragment3.this));
         }
 
 
 
     }
-//----------------------------------------------------------------------------------------------------------------------------
+//--------PHP파일 불러오기 위한 클래스--------------------------------------------------------------------------------------------------------------
 private class GetData extends AsyncTask<String, Void, String> {
 
     ProgressDialog progressDialog;
@@ -874,9 +919,10 @@ private class GetData extends AsyncTask<String, Void, String> {
         } else {
 
             mJsonString = result;
-            showResult();
+            showResult(); //showResult메소드를 불러온다.
 
 
+//--------------------------------pieChart를 보여주기 위한 부분--------------------------------------------------
             pieChart.setUsePercentValues(true); //true로 퍼센트 설정, 개수만 보여줄라면 false하면 됨
             pieChart.getDescription().setEnabled(false);
             pieChart.setExtraOffsets(5,10,5,5);
@@ -904,6 +950,7 @@ private class GetData extends AsyncTask<String, Void, String> {
 
             Log.i("countnum", String.valueOf(cocacount));
 
+            //원형서킷안에 데이터들을 추가한다. 여기서 php파일에서 받아온 데이터를 저장한 변수들을 넣어논다.
             yValues.add(new PieEntry(Math.round(cocacount),"코카콜라"));
             yValues.add(new PieEntry(Math.round(cidarcount),"사이다"));
             yValues.add(new PieEntry(Math.round(fantacount),"환타"));
@@ -954,6 +1001,7 @@ private class GetData extends AsyncTask<String, Void, String> {
             //pieChart.setMarkerView(mv);
 
 
+            //불러올때마다 다시 초기화를 시켜주는 부분
             count = 0; // 건수 출력
             SVMtotalmoney=0; // 자판기 총 금액 변수
             SVMtotalcount=0; // 자판기 총 건수 변수
@@ -970,6 +1018,7 @@ private class GetData extends AsyncTask<String, Void, String> {
     }
 
 
+    //서버와 연동하는 메소드
     @Override
     protected String doInBackground(String... params) {
 
@@ -1035,8 +1084,10 @@ private class GetData extends AsyncTask<String, Void, String> {
     }
 }
 
+//php파일 데이터를 처리하고 정의하는 메소드
     private void showResult() {
 
+        //받아올 php파일 데이터와 레코드들
         String TAG_JSON = "TransactionDetails_DATA";
         String TAG_TD_TRCODE = "TD_TRCODE";
         String TAG_TD_TRDATE = "TD_TRDATE";
@@ -1048,6 +1099,7 @@ private class GetData extends AsyncTask<String, Void, String> {
             JSONObject jsonObject = new JSONObject(mJsonString);
             JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
 
+            //jsonArray를 통해 받아온 데이터의 배열 크기만큼 for문을 돌려 반복한다.
             for (int i = 0; i < jsonArray.length(); i++) {
 
                 JSONObject item = jsonArray.getJSONObject(i);
@@ -1068,11 +1120,12 @@ private class GetData extends AsyncTask<String, Void, String> {
                 mAdapter.notifyDataSetChanged();
 
 
+                //기간별 금액과 건수를 출력하기 위해 기간별 날짜값을 불러온다.
                 String date11 = String.valueOf(firstcal.getText());
                 String date22 = String.valueOf(lastcal.getText());
 
                 try {
-                    //데이트피커 firstcal과 lastcal에서 선택된 값을 시간값으로 바꾸기위해 그 시간값을 getTime으로 값으로 바꾸어 비교한다.
+                    //데이트피커 firstcal과 lastcal에서 선택된 값을 시간값으로 바꾸어 처리하기위해 그 시간값을 getTime으로 값으로 바꾸어 비교한다.
                     Date FirDate = dateFormat.parse(date11);
                     Date SecDate = dateFormat.parse(date22);
 

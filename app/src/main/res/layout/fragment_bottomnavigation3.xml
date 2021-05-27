@@ -194,7 +194,18 @@
 
 
         </LinearLayout>
-
+<!--
+        <com.applandeo.materialcalendarview.CalendarView
+            android:id="@+id/calenershow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:eventsEnabled="true"
+            app:selectionColor="@color/colorPrimaryDark"
+            app:type="one_day_picker"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dateLayout"
+            app:layout_constraintEnd_toEndOf="parent"/>
+     -->
         <!--달력 버튼 클릭시 화면에 보이게 함 여기에는 달력날짜마다 당일날의 총매출이 찍힐거임 -->
         <com.prolificinteractive.materialcalendarview.MaterialCalendarView
             android:id="@+id/calendershow"
