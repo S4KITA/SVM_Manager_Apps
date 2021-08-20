@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -77,6 +78,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -140,6 +142,7 @@ public class BottomNavigationFragment3 extends Fragment {
 
     //날짜데이터를 담기위해 날짜데이터형식을 지정
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    DecimalFormat moneyFormat = new DecimalFormat("###,###");
 
     //php데이터 출력 변수
     int count = 0; // 건수 출력
@@ -353,6 +356,9 @@ public class BottomNavigationFragment3 extends Fragment {
         firstcal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                Toast.makeText(getContext(), "시작 날짜를 입력하세요", Toast.LENGTH_SHORT).show();
+
                 //lastcal에 설정될 datepicker리스너 두번째 기간별 선택하기 위한 리스너
                 DatePickerDialog lastdatePickerDialog = new DatePickerDialog(
                         getActivity(),
@@ -384,6 +390,23 @@ public class BottomNavigationFragment3 extends Fragment {
                                 //지정한 날짜를 lastcal의 텍스트로 변경을함
                                 lastcal.setText(dateFormat.format(date1));
                                 //firstcal.setText(String.format("%d - %d - %d", yy,mm+1,dd));
+
+                                year.setBackgroundResource(R.drawable.toptextview);
+                                year.setTextColor(Color.parseColor("#9E9E9E"));
+                                year.setTypeface(null, NORMAL);
+
+                                today.setBackgroundResource(R.drawable.todaytextview);
+                                today.setTextColor(Color.parseColor("#9E9E9E"));
+                                today.setTypeface(null, NORMAL);
+
+                                month.setBackgroundResource(R.drawable.toptextview);
+                                month.setTextColor(Color.parseColor("#9E9E9E"));
+                                month.setTypeface(null, NORMAL);
+
+                                calender.setBackgroundResource(R.drawable.caltextview);
+                                calender.setTextColor(Color.parseColor("#9E9E9E"));
+                                calender.setTypeface(null, NORMAL);
+
 
                                 Log.i("Year test",  calendar1+ " ### " +calendar2);
 
@@ -465,10 +488,27 @@ public class BottomNavigationFragment3 extends Fragment {
                                 calendar2.set(Calendar.MONTH, m2);
                                 calendar2.set(Calendar.DAY_OF_MONTH, d2);
 
+                                Toast.makeText(getContext(), "끝 날짜를 입력하세요", Toast.LENGTH_SHORT).show();
+
                                 //지정한 날짜를 firstcal의 텍스트로 변경을함
                                 firstcal.setText(dateFormat.format(date2));
                                 //lastcal.setText(String.format("%d - %d - %d", yy,mm+1,dd));
 
+                                year.setBackgroundResource(R.drawable.toptextview);
+                                year.setTextColor(Color.parseColor("#9E9E9E"));
+                                year.setTypeface(null, NORMAL);
+
+                                today.setBackgroundResource(R.drawable.todaytextview);
+                                today.setTextColor(Color.parseColor("#9E9E9E"));
+                                today.setTypeface(null, NORMAL);
+
+                                month.setBackgroundResource(R.drawable.toptextview);
+                                month.setTextColor(Color.parseColor("#9E9E9E"));
+                                month.setTypeface(null, NORMAL);
+
+                                calender.setBackgroundResource(R.drawable.caltextview);
+                                calender.setTextColor(Color.parseColor("#9E9E9E"));
+                                calender.setTypeface(null, NORMAL);
 
                             }
                         },
@@ -488,8 +528,72 @@ public class BottomNavigationFragment3 extends Fragment {
                 lastdatePickerDialog.show();
                 firstdatePickerDialog.show();
 
+                firstdatePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE,getString(android.R.string.cancel),
+                        (dialog, which) -> {
+                    if ( which == DialogInterface.BUTTON_NEGATIVE) {
+                        Toast.makeText(
+                                getContext(),
+                                "끝 날짜를 입력하여 주십시오",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                    }
+                        });
+
+                lastdatePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE,getString(android.R.string.cancel),
+                        (dialog, which) -> {
+                            if ( which == DialogInterface.BUTTON_NEGATIVE) {
+                                Toast.makeText(
+                                        getContext(),
+                                        "날짜를 취소하였습니다. 기존의 검색되어있던 날짜로 출력합니다.",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
+                                //만약 달력의 기간이 오류가 나거나 앞뒤 기간을 다시 확인하기 위해 필요한 로직들
+                                String exdate1 = String.valueOf(firstcal.getText());
+                                String exdate2 = String.valueOf(lastcal.getText());
+                                Log.i("Year test",  exdate1+ " ### " +exdate2);
+                                //int result1 = calendar1.compareTo(calendar2);
+                                try {
+                                    Date FirstDate = dateFormat.parse(exdate1);
+                                    Date SecondDate = dateFormat.parse(exdate2);
+                                    Log.i("test",  FirstDate+ " ### " +SecondDate);
+                                    //compareTo()메소드를 통해 날짜 비교를 구현
+                                    if (FirstDate.compareTo(SecondDate)>0){ //fisetDate가 SecondDate보다 값이 크면 1을 반환하게됨
+                                        //첫번째 날짜 값이 두번째 날짜값보다 크기에, 오류 토스트메시지를 출력하며 두개의 날짜 값을 다시 변경하여 조정한다.
+                                        firstcal.setText(dateFormat.format(date1));
+                                        lastcal.setText(dateFormat.format(date2));
+                                        Toast.makeText(getActivity(), "달력의 앞뒤 기간을 다시 확인해주십시오.\n"
+                                                +firstcal.getText()+"~"+lastcal.getText()+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }else if (FirstDate.compareTo(SecondDate)<0){ //fisetDate가 SecondDate보다 값이 작으면 -1을 반환하게됨 정상적으로 출력
+                                        Toast.makeText(getActivity(), dateFormat.format(FirstDate)+"~"+dateFormat.format(SecondDate)+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }else if(FirstDate.compareTo(SecondDate)==0){ //fisetDate가 SecondDate보다 값이 같으면 오늘 날짜를 출력하는것
+                                        Toast.makeText(getActivity(), "오늘"+dateFormat.format(FirstDate)+"일의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }
+                                    mArrayList.clear();
+                                    mAdapter.notifyDataSetChanged();
+
+                                    GetData task = new GetData();
+                                    task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
 
 
+                                    System.out.println(count);
+
+                                    //두 날짜간의 날짜 차이를 출력하기 위한 변수
+                                    long calDate = FirstDate.getTime() - SecondDate.getTime();
+                                    // Date.getTime() 은 해당날짜를 기준으로1970년 00:00:00 부터 몇 초가 흘렀는지를 반환해준다.
+                                    // 이제 24*60*60*1000(각 시간값에 따른 차이점) 을 나눠주면 일수가 나온다.
+                                    long calDateDays = calDate / ( 24*60*60*1000);
+
+                                    calDateDays = Math.abs(calDateDays);
+
+                                    System.out.println("두 날짜의 날짜 차이: "+calDateDays);
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
 
             }
         });
@@ -499,6 +603,8 @@ public class BottomNavigationFragment3 extends Fragment {
         lastcal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                Toast.makeText(getContext(), "끝 날짜를 입력하세요", Toast.LENGTH_SHORT).show();
 
                 //lastcal을 변경하기 위한, 날짜를 지정하기 위한 데이트피커를 정의함
                 DatePickerDialog afterdatePickerDialog = new DatePickerDialog(
@@ -534,6 +640,21 @@ public class BottomNavigationFragment3 extends Fragment {
                                 lastcal.setText(dateFormat.format(date2));
                                 //lastcal.setText(String.format("%d - %d - %d", yy,mm+1,dd));
 
+                                year.setBackgroundResource(R.drawable.toptextview);
+                                year.setTextColor(Color.parseColor("#9E9E9E"));
+                                year.setTypeface(null, NORMAL);
+
+                                today.setBackgroundResource(R.drawable.todaytextview);
+                                today.setTextColor(Color.parseColor("#9E9E9E"));
+                                today.setTypeface(null, NORMAL);
+
+                                month.setBackgroundResource(R.drawable.toptextview);
+                                month.setTextColor(Color.parseColor("#9E9E9E"));
+                                month.setTypeface(null, NORMAL);
+
+                                calender.setBackgroundResource(R.drawable.caltextview);
+                                calender.setTextColor(Color.parseColor("#9E9E9E"));
+                                calender.setTypeface(null, NORMAL);
 
 
                                 Log.i("Year test",  calendar1+ " ### " +calendar2);
@@ -599,7 +720,502 @@ public class BottomNavigationFragment3 extends Fragment {
                 afterdatePickerDialog.getDatePicker().setMaxDate(cal.getTimeInMillis());
                 afterdatePickerDialog.show();// 다이얼로그를 불러옴
 
+                afterdatePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE,getString(android.R.string.cancel),
+                        (dialog, which) -> {
+                            if ( which == DialogInterface.BUTTON_NEGATIVE) {
+                                Toast.makeText(
+                                        getContext(),
+                                        "날짜를 취소하였습니다. 기존의 검색되어있던 날짜로 출력합니다.",
+                                        Toast.LENGTH_SHORT
+                                ).show();
 
+                                //만약 달력의 기간이 오류가 나거나 앞뒤 기간을 다시 확인하기 위해 필요한 로직들
+                                String exdate1 = String.valueOf(firstcal.getText());
+                                String exdate2 = String.valueOf(lastcal.getText());
+                                Log.i("Year test",  exdate1+ " ### " +exdate2);
+                                //int result1 = calendar1.compareTo(calendar2);
+                                try {
+                                    Date FirstDate = dateFormat.parse(exdate1);
+                                    Date SecondDate = dateFormat.parse(exdate2);
+                                    Log.i("test",  FirstDate+ " ### " +SecondDate);
+                                    //compareTo()메소드를 통해 날짜 비교를 구현
+                                    if (FirstDate.compareTo(SecondDate)>0){ //fisetDate가 SecondDate보다 값이 크면 1을 반환하게됨
+                                        //첫번째 날짜 값이 두번째 날짜값보다 크기에, 오류 토스트메시지를 출력하며 두개의 날짜 값을 다시 변경하여 조정한다.
+                                        firstcal.setText(dateFormat.format(date1));
+                                        lastcal.setText(dateFormat.format(date2));
+                                        Toast.makeText(getActivity(), "달력의 앞뒤 기간을 다시 확인해주십시오.\n"
+                                                +firstcal.getText()+"~"+lastcal.getText()+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }else if (FirstDate.compareTo(SecondDate)<0){ //fisetDate가 SecondDate보다 값이 작으면 -1을 반환하게됨 정상적으로 출력
+                                        Toast.makeText(getActivity(), dateFormat.format(FirstDate)+"~"+dateFormat.format(SecondDate)+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }else if(FirstDate.compareTo(SecondDate)==0){ //fisetDate가 SecondDate보다 값이 같으면 오늘 날짜를 출력하는것
+                                        Toast.makeText(getActivity(), "오늘"+dateFormat.format(FirstDate)+"일의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }
+                                    mArrayList.clear();
+                                    mAdapter.notifyDataSetChanged();
+
+                                    GetData task = new GetData();
+                                    task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
+
+
+                                    System.out.println(count);
+
+                                    //두 날짜간의 날짜 차이를 출력하기 위한 변수
+                                    long calDate = FirstDate.getTime() - SecondDate.getTime();
+                                    // Date.getTime() 은 해당날짜를 기준으로1970년 00:00:00 부터 몇 초가 흘렀는지를 반환해준다.
+                                    // 이제 24*60*60*1000(각 시간값에 따른 차이점) 을 나눠주면 일수가 나온다.
+                                    long calDateDays = calDate / ( 24*60*60*1000);
+
+                                    calDateDays = Math.abs(calDateDays);
+
+                                    System.out.println("두 날짜의 날짜 차이: "+calDateDays);
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+            }
+        });
+
+        firstcal.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                Toast.makeText(getContext(), "시작 날짜를 입력하세요", Toast.LENGTH_SHORT).show();
+
+                //lastcal에 설정될 datepicker리스너 두번째 기간별 선택하기 위한 리스너
+                DatePickerDialog lastdatePickerDialog = new DatePickerDialog(
+                        getActivity(),android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                        new DatePickerDialog.OnDateSetListener() {
+                            public void onDateSet(DatePicker datePicker, int yy, int mm, int dd) {
+                                // Date Picker에서 선택한 날짜를 TextView에 설정
+                                firstcaldata = yy+"-"+(mm+1)+"-"+dd;
+                                y1=yy;
+                                m1=mm+1;
+                                d1=dd;
+
+                                Log.i("last datepicker",  "last datepicker");
+
+
+                                //dateFormat형식으로 지정하기 위해 날짜를 dateFormat에 담아놈
+                                try {
+                                    date1 = dateFormat.parse(y1+"-" + m1+"-"+d1);
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+                                //지정한 날짜를 calendar1에 담아놓음
+                                calendar1 = Calendar.getInstance();
+                                calendar1.set(Calendar.YEAR, y1);
+                                calendar1.set(Calendar.MONTH, m1);
+                                calendar1.set(Calendar.DAY_OF_MONTH, d1);
+
+                                //지정한 날짜를 lastcal의 텍스트로 변경을함
+                                lastcal.setText(dateFormat.format(date1));
+                                //firstcal.setText(String.format("%d - %d - %d", yy,mm+1,dd));
+
+                                year.setBackgroundResource(R.drawable.toptextview);
+                                year.setTextColor(Color.parseColor("#9E9E9E"));
+                                year.setTypeface(null, NORMAL);
+
+                                today.setBackgroundResource(R.drawable.todaytextview);
+                                today.setTextColor(Color.parseColor("#9E9E9E"));
+                                today.setTypeface(null, NORMAL);
+
+                                month.setBackgroundResource(R.drawable.toptextview);
+                                month.setTextColor(Color.parseColor("#9E9E9E"));
+                                month.setTypeface(null, NORMAL);
+
+                                calender.setBackgroundResource(R.drawable.caltextview);
+                                calender.setTextColor(Color.parseColor("#9E9E9E"));
+                                calender.setTypeface(null, NORMAL);
+
+
+                                Log.i("Year test",  calendar1+ " ### " +calendar2);
+
+                                //만약 달력의 기간이 오류가 나거나 앞뒤 기간을 다시 확인하기 위해 필요한 로직들
+                                String exdate1 = String.valueOf(firstcal.getText());
+                                String exdate2 = String.valueOf(lastcal.getText());
+                                Log.i("Year test",  exdate1+ " ### " +exdate2);
+                                //int result1 = calendar1.compareTo(calendar2);
+                                try {
+                                    Date FirstDate = dateFormat.parse(exdate1);
+                                    Date SecondDate = dateFormat.parse(exdate2);
+                                    Log.i("test",  FirstDate+ " ### " +SecondDate);
+                                    //compareTo()메소드를 통해 날짜 비교를 구현
+                                    if (FirstDate.compareTo(SecondDate)>0){ //fisetDate가 SecondDate보다 값이 크면 1을 반환하게됨
+                                        //첫번째 날짜 값이 두번째 날짜값보다 크기에, 오류 토스트메시지를 출력하며 두개의 날짜 값을 다시 변경하여 조정한다.
+                                        firstcal.setText(dateFormat.format(date1));
+                                        lastcal.setText(dateFormat.format(date2));
+                                        Toast.makeText(getActivity(), "달력의 앞뒤 기간을 다시 확인해주십시오.\n"
+                                                +firstcal.getText()+"~"+lastcal.getText()+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }else if (FirstDate.compareTo(SecondDate)<0){ //fisetDate가 SecondDate보다 값이 작으면 -1을 반환하게됨 정상적으로 출력
+                                        Toast.makeText(getActivity(), dateFormat.format(FirstDate)+"~"+dateFormat.format(SecondDate)+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }else if(FirstDate.compareTo(SecondDate)==0){ //fisetDate가 SecondDate보다 값이 같으면 오늘 날짜를 출력하는것
+                                        Toast.makeText(getActivity(), "오늘"+dateFormat.format(FirstDate)+"일의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }
+                                    mArrayList.clear();
+                                    mAdapter.notifyDataSetChanged();
+
+                                    GetData task = new GetData();
+                                    task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
+
+
+                                    System.out.println(count);
+
+                                    //두 날짜간의 날짜 차이를 출력하기 위한 변수
+                                    long calDate = FirstDate.getTime() - SecondDate.getTime();
+                                    // Date.getTime() 은 해당날짜를 기준으로1970년 00:00:00 부터 몇 초가 흘렀는지를 반환해준다.
+                                    // 이제 24*60*60*1000(각 시간값에 따른 차이점) 을 나눠주면 일수가 나온다.
+                                    long calDateDays = calDate / ( 24*60*60*1000);
+
+                                    calDateDays = Math.abs(calDateDays);
+
+                                    System.out.println("두 날짜의 날짜 차이: "+calDateDays);
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        },
+                        cal.get(Calendar.YEAR),
+                        cal.get(Calendar.MONTH),
+                        cal.get(Calendar.DATE)
+                );
+
+                //firstcal에 설정될 datepicker리스너 첫번째 기간별 선택하기 위한 리스너
+                DatePickerDialog firstdatePickerDialog = new DatePickerDialog(
+                        getActivity(),android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int yy, int mm, int dd) {
+                                // Date Picker에서 선택한 날짜를 TextView에 설정
+                                lastcaldata = yy+"-"+(mm+1)+"-"+dd;
+                                y2=yy;
+                                m2=mm+1;
+                                d2=dd;
+
+                                Log.i("first datepicker",  "first datepicker");
+
+                                //dateFormat형식으로 지정하기 위해 날짜를 dateFormat에 담아놈
+                                try {
+                                    date2 = dateFormat.parse(y2+"-" + m2 +"-"+d2);
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+                                calendar2 = Calendar.getInstance();
+                                calendar2.set(Calendar.YEAR, y2);
+                                calendar2.set(Calendar.MONTH, m2);
+                                calendar2.set(Calendar.DAY_OF_MONTH, d2);
+
+                                Toast.makeText(getContext(), "끝 날짜를 입력하세요", Toast.LENGTH_SHORT).show();
+
+                                //지정한 날짜를 firstcal의 텍스트로 변경을함
+                                firstcal.setText(dateFormat.format(date2));
+                                //lastcal.setText(String.format("%d - %d - %d", yy,mm+1,dd));
+
+                                year.setBackgroundResource(R.drawable.toptextview);
+                                year.setTextColor(Color.parseColor("#9E9E9E"));
+                                year.setTypeface(null, NORMAL);
+
+                                today.setBackgroundResource(R.drawable.todaytextview);
+                                today.setTextColor(Color.parseColor("#9E9E9E"));
+                                today.setTypeface(null, NORMAL);
+
+                                month.setBackgroundResource(R.drawable.toptextview);
+                                month.setTextColor(Color.parseColor("#9E9E9E"));
+                                month.setTypeface(null, NORMAL);
+
+                                calender.setBackgroundResource(R.drawable.caltextview);
+                                calender.setTextColor(Color.parseColor("#9E9E9E"));
+                                calender.setTypeface(null, NORMAL);
+
+                            }
+                        },
+                        cal.get(Calendar.YEAR),
+                        cal.get(Calendar.MONTH),
+                        cal.get(Calendar.DAY_OF_MONTH)
+                );
+
+                cal=Calendar.getInstance();
+                //cal = cal.get(Calendar.YEAR)+" - "+ (cal.get(Calendar.MONTH)+1) + " - " + cal.get(Calendar.DATE);
+                //cal.set(cal.get(Calendar.YEAR)+" - "+ (cal.get(Calendar.MONTH)+1) + " - " + cal.get(Calendar.DATE));
+
+                //오늘날짜보다 뒤의 날짜는 비활성화함
+                lastdatePickerDialog.getDatePicker().setMaxDate(cal.getTimeInMillis());
+                firstdatePickerDialog.getDatePicker().setMaxDate(cal.getTimeInMillis());
+                //각 정의한 데이트다이얼로그를 보여줌
+
+                lastdatePickerDialog.getDatePicker().setCalendarViewShown(false);
+                lastdatePickerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                firstdatePickerDialog.getDatePicker().setCalendarViewShown(false);
+                firstdatePickerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+
+                firstdatePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE,getString(android.R.string.cancel),
+                        (dialog, which) -> {
+                            if ( which == DialogInterface.BUTTON_NEGATIVE) {
+                                Toast.makeText(
+                                        getContext(),
+                                        "끝 날짜를 입력하여 주십시오",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
+                            }
+                        });
+
+                lastdatePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE,getString(android.R.string.cancel),
+                        (dialog, which) -> {
+                            if ( which == DialogInterface.BUTTON_NEGATIVE) {
+                                Toast.makeText(
+                                        getContext(),
+                                        "두번째 취소 버튼 클릭",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
+                                //만약 달력의 기간이 오류가 나거나 앞뒤 기간을 다시 확인하기 위해 필요한 로직들
+                                String exdate1 = String.valueOf(firstcal.getText());
+                                String exdate2 = String.valueOf(lastcal.getText());
+                                Log.i("Year test",  exdate1+ " ### " +exdate2);
+                                //int result1 = calendar1.compareTo(calendar2);
+                                try {
+                                    Date FirstDate = dateFormat.parse(exdate1);
+                                    Date SecondDate = dateFormat.parse(exdate2);
+                                    Log.i("test",  FirstDate+ " ### " +SecondDate);
+                                    //compareTo()메소드를 통해 날짜 비교를 구현
+                                    if (FirstDate.compareTo(SecondDate)>0){ //fisetDate가 SecondDate보다 값이 크면 1을 반환하게됨
+                                        //첫번째 날짜 값이 두번째 날짜값보다 크기에, 오류 토스트메시지를 출력하며 두개의 날짜 값을 다시 변경하여 조정한다.
+                                        firstcal.setText(dateFormat.format(date1));
+                                        lastcal.setText(dateFormat.format(date2));
+                                        Toast.makeText(getActivity(), "달력의 앞뒤 기간을 다시 확인해주십시오.\n"
+                                                +firstcal.getText()+"~"+lastcal.getText()+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }else if (FirstDate.compareTo(SecondDate)<0){ //fisetDate가 SecondDate보다 값이 작으면 -1을 반환하게됨 정상적으로 출력
+                                        Toast.makeText(getActivity(), dateFormat.format(FirstDate)+"~"+dateFormat.format(SecondDate)+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }else if(FirstDate.compareTo(SecondDate)==0){ //fisetDate가 SecondDate보다 값이 같으면 오늘 날짜를 출력하는것
+                                        Toast.makeText(getActivity(), "오늘"+dateFormat.format(FirstDate)+"일의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }
+                                    mArrayList.clear();
+                                    mAdapter.notifyDataSetChanged();
+
+                                    GetData task = new GetData();
+                                    task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
+
+
+                                    System.out.println(count);
+
+                                    //두 날짜간의 날짜 차이를 출력하기 위한 변수
+                                    long calDate = FirstDate.getTime() - SecondDate.getTime();
+                                    // Date.getTime() 은 해당날짜를 기준으로1970년 00:00:00 부터 몇 초가 흘렀는지를 반환해준다.
+                                    // 이제 24*60*60*1000(각 시간값에 따른 차이점) 을 나눠주면 일수가 나온다.
+                                    long calDateDays = calDate / ( 24*60*60*1000);
+
+                                    calDateDays = Math.abs(calDateDays);
+
+                                    System.out.println("두 날짜의 날짜 차이: "+calDateDays);
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+
+
+                lastdatePickerDialog.show();
+                firstdatePickerDialog.show();
+
+
+
+
+                return true;
+            }
+        });
+
+        lastcal.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                Toast.makeText(getContext(), "끝 날짜를 입력하세요", Toast.LENGTH_SHORT).show();
+
+                //lastcal을 변경하기 위한, 날짜를 지정하기 위한 데이트피커를 정의함
+                DatePickerDialog afterdatePickerDialog = new DatePickerDialog(
+                        getActivity(),android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int yy, int mm, int dd) {
+                                // Date Picker에서 선택한 날짜를 TextView에 설정
+                                lastcaldata = yy+"-"+(mm+1)+"-"+dd;
+                                y2=yy;
+                                m2=mm+1;
+                                d2=dd;
+
+
+                                Log.i("first datepicker",  "first datepicker");
+
+                                //dateFormat형식으로 지정하기 위해 날짜를 dateFormat에 담아놈
+                                try {
+                                    date2 = dateFormat.parse(y2+"-" + m2 +"-"+d2);
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+
+
+                                calendar2 = Calendar.getInstance();
+                                calendar2.set(Calendar.YEAR, y2);
+                                calendar2.set(Calendar.MONTH, m2);
+                                calendar2.set(Calendar.DAY_OF_MONTH, d2);
+
+
+                                //지정한 날짜를 lastcal 텍스트로 변경을함
+                                lastcal.setText(dateFormat.format(date2));
+                                //lastcal.setText(String.format("%d - %d - %d", yy,mm+1,dd));
+
+                                year.setBackgroundResource(R.drawable.toptextview);
+                                year.setTextColor(Color.parseColor("#9E9E9E"));
+                                year.setTypeface(null, NORMAL);
+
+                                today.setBackgroundResource(R.drawable.todaytextview);
+                                today.setTextColor(Color.parseColor("#9E9E9E"));
+                                today.setTypeface(null, NORMAL);
+
+                                month.setBackgroundResource(R.drawable.toptextview);
+                                month.setTextColor(Color.parseColor("#9E9E9E"));
+                                month.setTypeface(null, NORMAL);
+
+                                calender.setBackgroundResource(R.drawable.caltextview);
+                                calender.setTextColor(Color.parseColor("#9E9E9E"));
+                                calender.setTypeface(null, NORMAL);
+
+
+                                Log.i("Year test",  calendar1+ " ### " +calendar2);
+
+                                String exdate1 = String.valueOf(firstcal.getText());
+                                String exdate2 = String.valueOf(lastcal.getText());
+                                Log.i("Year test",  exdate1+ " ### " +exdate2);
+                                //int result1 = calendar1.compareTo(calendar2);
+                                try {
+                                    Date FirstDate = dateFormat.parse(exdate1);
+                                    Date SecondDate = dateFormat.parse(exdate2);
+                                    Log.i("test",  FirstDate+ " ### " +SecondDate);
+
+                                    //compareTo()메소드를 통해 날짜를 비교함
+                                    if (FirstDate.compareTo(SecondDate)>0){//fisetDate가 SecondDate보다 값이 크면 1을 반환하게됨
+                                        //첫번째 날짜 값이 두번째 날짜값보다 크기에, 오류 토스트메시지를 출력하며 두개의 날짜 값을 다시 변경하여 조정한다.
+                                        lastcal.setText(firstcal.getText());
+                                        firstcal.setText(dateFormat.format(date2));
+                                        Toast.makeText(getActivity(), "달력의 앞뒤 기간을 다시 확인해주십시오.\n"
+                                                +firstcal.getText()+"~"+lastcal.getText()+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }else if (FirstDate.compareTo(SecondDate)<0){ //fisetDate가 SecondDate보다 값이 작으면 -1을 반환하게됨 정상적으로 출력
+                                        Toast.makeText(getActivity(), dateFormat.format(FirstDate)+"~"+dateFormat.format(SecondDate)+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }else if(FirstDate.compareTo(SecondDate)==0){ //fisetDate가 SecondDate보다 값이 같으면 오늘 날짜를 출력하는것
+                                        Toast.makeText(getActivity(), "오늘"+dateFormat.format(FirstDate)+"일의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    mArrayList.clear();
+                                    mAdapter.notifyDataSetChanged();
+
+                                    //날짜를 선택 완료하면 다시 php파일을 불러옴
+                                    GetData task = new GetData();
+                                    task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
+
+
+                                    System.out.println(count);
+
+                                    //두 날짜간의 날짜 차이를 출력하는 변수
+                                    long calDate = FirstDate.getTime() - SecondDate.getTime();
+
+                                    // Date.getTime() 은 해당날짜를 기준으로1970년 00:00:00 부터 몇 초가 흘렀는지를 반환해준다.
+                                    // 이제 24*60*60*1000(각 시간값에 따른 차이점) 을 나눠주면 일수가 나온다.
+                                    long calDateDays = calDate / ( 24*60*60*1000);
+
+                                    calDateDays = Math.abs(calDateDays);
+
+                                    System.out.println("두 날짜의 날짜 차이: "+calDateDays);
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        },
+                        cal.get(Calendar.YEAR),
+                        cal.get(Calendar.MONTH),
+                        cal.get(Calendar.DAY_OF_MONTH)
+                );
+
+
+
+                cal=Calendar.getInstance();
+                //오늘날짜 뒤의 날짜는 비활성화함
+                afterdatePickerDialog.getDatePicker().setMaxDate(cal.getTimeInMillis());
+                afterdatePickerDialog.getDatePicker().setCalendarViewShown(false);
+                afterdatePickerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+                afterdatePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE,getString(android.R.string.cancel),
+                        (dialog, which) -> {
+                            if ( which == DialogInterface.BUTTON_NEGATIVE) {
+                                Toast.makeText(
+                                        getContext(),
+                                        "두번째 취소 버튼 클릭",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
+                                //만약 달력의 기간이 오류가 나거나 앞뒤 기간을 다시 확인하기 위해 필요한 로직들
+                                String exdate1 = String.valueOf(firstcal.getText());
+                                String exdate2 = String.valueOf(lastcal.getText());
+                                Log.i("Year test",  exdate1+ " ### " +exdate2);
+                                //int result1 = calendar1.compareTo(calendar2);
+                                try {
+                                    Date FirstDate = dateFormat.parse(exdate1);
+                                    Date SecondDate = dateFormat.parse(exdate2);
+                                    Log.i("test",  FirstDate+ " ### " +SecondDate);
+                                    //compareTo()메소드를 통해 날짜 비교를 구현
+                                    if (FirstDate.compareTo(SecondDate)>0){ //fisetDate가 SecondDate보다 값이 크면 1을 반환하게됨
+                                        //첫번째 날짜 값이 두번째 날짜값보다 크기에, 오류 토스트메시지를 출력하며 두개의 날짜 값을 다시 변경하여 조정한다.
+                                        firstcal.setText(dateFormat.format(date1));
+                                        lastcal.setText(dateFormat.format(date2));
+                                        Toast.makeText(getActivity(), "달력의 앞뒤 기간을 다시 확인해주십시오.\n"
+                                                +firstcal.getText()+"~"+lastcal.getText()+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }else if (FirstDate.compareTo(SecondDate)<0){ //fisetDate가 SecondDate보다 값이 작으면 -1을 반환하게됨 정상적으로 출력
+                                        Toast.makeText(getActivity(), dateFormat.format(FirstDate)+"~"+dateFormat.format(SecondDate)+"의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }else if(FirstDate.compareTo(SecondDate)==0){ //fisetDate가 SecondDate보다 값이 같으면 오늘 날짜를 출력하는것
+                                        Toast.makeText(getActivity(), "오늘"+dateFormat.format(FirstDate)+"일의 매출을 확인하십시오." , Toast.LENGTH_SHORT).show();
+                                    }
+                                    mArrayList.clear();
+                                    mAdapter.notifyDataSetChanged();
+
+                                    GetData task = new GetData();
+                                    task.execute("http://" + IP_ADDRESS + "/TransactionDetails.php", "");
+
+
+                                    System.out.println(count);
+
+                                    //두 날짜간의 날짜 차이를 출력하기 위한 변수
+                                    long calDate = FirstDate.getTime() - SecondDate.getTime();
+                                    // Date.getTime() 은 해당날짜를 기준으로1970년 00:00:00 부터 몇 초가 흘렀는지를 반환해준다.
+                                    // 이제 24*60*60*1000(각 시간값에 따른 차이점) 을 나눠주면 일수가 나온다.
+                                    long calDateDays = calDate / ( 24*60*60*1000);
+
+                                    calDateDays = Math.abs(calDateDays);
+
+                                    System.out.println("두 날짜의 날짜 차이: "+calDateDays);
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+                afterdatePickerDialog.show();// 다이얼로그를 불러옴
+
+                return true;
             }
         });
 
@@ -1287,12 +1903,12 @@ private class GetData extends AsyncTask<String, Void, String> {
                         fantanum.setText(0+"건");
                         mountinduenum.setText(0+"건");
                     }else if( SVMtotalmoney != 0 ){
-                        totalmoneyshow.setText(SVMtotalmoney+"원");
+                        totalmoneyshow.setText(moneyFormat.format(SVMtotalmoney)+"원");
                         totalnumbershow.setText(SVMtotalcount+"건");
-                        cocacolamoney.setText(cocatotalmoney + "원");
-                        cidarmoney.setText(cidartotalmoney + "원");
-                        fantamoney.setText(fantatotalmoney + "원");
-                        mountinduemoney.setText(mountintotalmoney + "원");
+                        cocacolamoney.setText(moneyFormat.format(cocatotalmoney) + "원");
+                        cidarmoney.setText(moneyFormat.format(cidartotalmoney) + "원");
+                        fantamoney.setText(moneyFormat.format(fantatotalmoney) + "원");
+                        mountinduemoney.setText(moneyFormat.format(mountintotalmoney) + "원");
 
                         cocacolanum.setText(cocacount+"건");
                         cidarnum.setText(cidarcount+"건");
