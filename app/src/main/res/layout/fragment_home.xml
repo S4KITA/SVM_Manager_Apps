@@ -1,20 +1,451 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff">
+    android:orientation="vertical"
+    tools:context=".Home.HomeFragment"
+    android:background="@color/colorWhite">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="음료화면"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        android:layout_gravity="center"
+        android:fontFamily="@font/notosanscjkkrmedium"
+        android:text="홈"
+        android:textColor="#000000"
+        android:layout_marginTop="7dp"
+        android:textSize="17sp"
+        android:textAlignment="center"/>
+
+    <View
+        android:id="@+id/view"
+        android:layout_marginTop="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e3e3e3"
+        />
+
+    <TextView
+        android:id="@+id/mTextViewResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_weight="4"
+        android:padding="5dp"
+        android:visibility="gone" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/check_shape"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/cocacola" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/notosanscjkkrmedium"
+                            android:textColor="#000000"
+                            android:gravity="center"
+                            android:text="코카콜라"
+                            android:textSize="20sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:background="@drawable/price_text"
+                                android:id="@+id/mTextViewCocacolaPrice"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/notosanscjkkrmedium"
+                                android:textColor="#000000"
+                                android:gravity="center"
+                                android:layout_marginRight="1dp"
+                                android:layout_weight="1"
+                                android:text="가격 정보 없음"
+                                android:textSize="13dp" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                            <TextView
+                                android:background="@drawable/count_text"
+                                android:id="@+id/mTextViewCocacolaStock"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/notosanscjkkrmedium"
+                                android:gravity="center"
+                                android:textColor="#000000"
+                                android:layout_weight="1"
+                                android:text="알 수 없음"
+                                android:layout_marginLeft="1dp"
+                                android:textSize="13dp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/check_shape"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/cider" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/notosanscjkkrmedium"
+                            android:textColor="#000000"
+                            android:gravity="center"
+                            android:text="칠성 사이다"
+                            android:textSize="20sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:background="@drawable/price_text"
+                                android:id="@+id/mTextViewChilsungPrice"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/notosanscjkkrmedium"
+                                android:textColor="#000000"
+                                android:gravity="center"
+                                android:layout_marginRight="1dp"
+                                android:layout_weight="1"
+                                android:text="가격 정보 없음"
+                                android:textSize="13dp" />
+
+
+                            <TextView
+                                android:background="@drawable/count_text"
+                                android:id="@+id/mTextViewChilsungStock"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/notosanscjkkrmedium"
+                                android:gravity="center"
+                                android:textColor="#000000"
+                                android:layout_weight="1"
+                                android:layout_marginLeft="1dp"
+                                android:text="알 수 없음"
+                                android:textSize="13dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/check_shape"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="201dp"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/jejugamguel" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/notosanscjkkrmedium"
+                            android:textColor="#000000"
+                            android:gravity="center"
+                            android:text="제주 감귤"
+                            android:textSize="20sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+
+                            <TextView
+                                android:id="@+id/mTextViewSsekssekPrice"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:background="@drawable/price_text"
+                                android:fontFamily="@font/notosanscjkkrmedium"
+                                android:layout_marginRight="1dp"
+                                android:gravity="center"
+                                android:text="가격 정보 없음"
+                                android:textColor="#000000"
+                                android:textSize="13dp" />
+
+                            <TextView
+                                android:background="@drawable/count_text"
+                                android:id="@+id/mTextViewSsekssekStock"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/notosanscjkkrmedium"
+                                android:gravity="center"
+                                android:textColor="#000000"
+                                android:layout_weight="1"
+                                android:layout_marginLeft="1dp"
+                                android:text="알 수 없음"
+                                android:textSize="13dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/check_shape"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/fanta" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/notosanscjkkrmedium"
+                            android:textColor="#000000"
+                            android:gravity="center"
+                            android:text="환타 오렌지"
+                            android:textSize="20sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:background="@drawable/price_text"
+                                android:id="@+id/mTextViewFantaPrice"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/notosanscjkkrmedium"
+                                android:textColor="#000000"
+                                android:gravity="center"
+                                android:layout_marginRight="1dp"
+                                android:layout_weight="1"
+                                android:text="가격 정보 없음"
+                                android:textSize="13dp" />
+
+
+                            <TextView
+                                android:background="@drawable/count_text"
+                                android:id="@+id/mTextViewFantaStock"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/notosanscjkkrmedium"
+                                android:gravity="center"
+                                android:textColor="#000000"
+                                android:layout_weight="1"
+                                android:text="알 수 없음"
+                                android:layout_marginLeft="1dp"
+                                android:textSize="13dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/check_shape"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/mountain" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/notosanscjkkrmedium"
+                            android:textColor="#000000"
+                            android:gravity="center"
+                            android:text="마운틴 듀"
+                            android:textSize="20sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:background="@drawable/price_text"
+                                android:id="@+id/mTextViewMountainPrice"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/notosanscjkkrmedium"
+                                android:textColor="#000000"
+                                android:gravity="center"
+                                android:layout_marginRight="1dp"
+                                android:layout_weight="1"
+                                android:text="가격 정보 없음"
+                                android:textSize="13dp" />
+
+
+                            <TextView
+                                android:background="@drawable/count_text"
+                                android:id="@+id/mTextViewMountainStock"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/notosanscjkkrmedium"
+                                android:gravity="center"
+                                android:textColor="#000000"
+                                android:layout_marginLeft="1dp"
+                                android:layout_weight="1"
+                                android:text="알 수 없음"
+                                android:textSize="13dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/check_shape"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/galbae" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/notosanscjkkrmedium"
+                            android:textColor="#000000"
+                            android:gravity="center"
+                            android:text="갈배 사이다"
+                            android:textSize="20sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:background="@drawable/price_text"
+                                android:id="@+id/mTextViewGalbaePrice"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/notosanscjkkrmedium"
+                                android:textColor="#000000"
+                                android:gravity="center"
+                                android:layout_weight="1"
+                                android:text="가격 정보 없음"
+                                android:layout_marginRight="1dp"
+                                android:textSize="13dp" />
+
+
+                            <TextView
+                                android:background="@drawable/count_text"
+                                android:id="@+id/mTextViewGalbaeStock"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/notosanscjkkrmedium"
+                                android:gravity="center"
+                                android:textColor="#000000"
+                                android:layout_weight="1"
+                                android:layout_marginLeft="1dp"
+                                android:text="알 수 없음"
+                                android:textSize="13dp" />
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/mRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_margin="5dp"
+                    android:layout_weight="6"
+                    android:padding="5dp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+        </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</LinearLayout>
