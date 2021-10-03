@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.svmmanager.fragment.HomeFragment;
+import com.example.svmmanager.Home.HomeFragment;
 import com.example.svmmanager.fragment.board.BoardFragment;
 import com.example.svmmanager.fragment.CalendarFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
