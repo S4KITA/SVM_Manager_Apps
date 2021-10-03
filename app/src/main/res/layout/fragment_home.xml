@@ -193,7 +193,7 @@
 
                         <ImageView
                             android:layout_width="match_parent"
-                            android:layout_height="201dp"
+                            android:layout_height="200dp"
                             android:layout_margin="10dp"
                             android:src="@drawable/pepsi" />
 
@@ -216,7 +216,7 @@
                             <TextView
                                 android:id="@+id/mTextViewPepsiPrice"
                                 android:layout_width="match_parent"
-                                android:layout_height="24dp"
+                                android:layout_height="match_parent"
                                 android:layout_gravity="center"
                                 android:layout_marginRight="1dp"
                                 android:layout_weight="1"
