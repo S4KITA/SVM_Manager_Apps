@@ -240,8 +240,8 @@ public class HomeFragment extends Fragment {
                         break;
 
                     case "Pepsi":
-                        mTextViewPepsiStock.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
-                        mTextViewPepsiPrice.setText("수량 : " + mArrayList.get(i).getDRStock() + " 개");
+                        mTextViewPepsiPrice.setText("가격 : " + mArrayList.get(i).getDRPrice() + " 원");
+                        mTextViewPepsiStock.setText("수량 : " + mArrayList.get(i).getDRStock() + " 개");
                         break;
 
                     case "Fanta Orange":
