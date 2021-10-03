@@ -38,6 +38,7 @@
         android:layout_height="wrap_content"
         android:entries="@array/vending"
         android:gravity="right"
+        android:visibility="invisible"
         app:layout_constraintStart_toEndOf="@+id/datenow"
         app:layout_constraintTop_toTopOf="@+id/topBar"
         app:layout_constraintBottom_toBottomOf="@id/topBar"
@@ -214,7 +215,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dateLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            android:visibility="visible"
+            android:visibility="gone"
             app:mcv_selectionColor="#a9dbf0cb"
             app:mcv_showOtherDates="defaults"
             />
@@ -376,7 +377,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/cocacola"
             app:layout_constraintStart_toStartOf="parent"
-            android:text="사이다"
+            android:text="스프라이트"
             android:textSize="17dp"
             android:textStyle="bold"
             android:layout_marginLeft="50dp"
@@ -397,12 +398,12 @@
             android:layout_marginBottom="10dp" />
 
         <TextView
-            android:id="@+id/mountindue"
+            android:id="@+id/pepsi"
             android:layout_width="90dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/fantaorange"
             app:layout_constraintStart_toStartOf="parent"
-            android:text="마운틴 듀"
+            android:text="펩시"
             android:textSize="17dp"
             android:textStyle="bold"
             android:layout_marginLeft="50dp"
@@ -492,11 +493,11 @@
             android:layout_marginBottom="10dp"/>
 
         <TextView
-            android:id="@+id/mountinduenum"
+            android:id="@+id/pepsinum"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/fantanum"
-            app:layout_constraintStart_toEndOf="@+id/mountindue"
+            app:layout_constraintStart_toEndOf="@+id/pepsi"
             android:textAlignment="textEnd"
             android:text="8건"
             android:textSize="17dp"
@@ -506,7 +507,7 @@
             android:layout_marginBottom="10dp" />
 
         <TextView
-            android:id="@+id/mountinduemoney"
+            android:id="@+id/pepsimoney"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/fantamoney"
@@ -524,7 +525,7 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mountinduenum"
+            app:layout_constraintTop_toBottomOf="@+id/pepsinum"
             android:text=""
             android:visibility="invisible"/>
 

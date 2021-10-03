@@ -100,7 +100,7 @@ public class CalendarFragment extends Fragment {
     TextView cocacolanum, cocacolamoney;
     TextView cidarnum, cidarmoney;
     TextView fantanum, fantamoney;
-    TextView mountinduenum, mountinduemoney;
+    TextView pepsinum, pepsimoney;
 
     //스피너로 인한 자판기 출력 변수
     Spinner vendingSpinner;
@@ -127,13 +127,13 @@ public class CalendarFragment extends Fragment {
     int SVMtotalmoney=0; // 자판기 총 금액 변수
     int SVMtotalcount=0; // 자판기 총 건수 변수
     int cocatotalmoney = 0; // 코카콜라 총 금액 변수
-    int cidartotalmoney = 0; // 사이다 총 금액 변수
+    int cidartotalmoney = 0; // 스프라이트 총 금액 변수
     int fantatotalmoney = 0; // 환타 총 금액 변수
-    int mountintotalmoney = 0; // 마운틴듀 총 금액 변수
+    int pepsitotalmoney = 0; // 펩시 총 금액 변수
     int cocacount=0; // 코카콜라 총 건수 변수
-    int cidarcount=0; // 사이다 총 건수 변수
+    int cidarcount=0; // 스프라이트 총 건수 변수
     int fantacount=0; // 환타 총 건수 변수
-    int mountincount=0; // 마운틴 듀 총 건수 변수
+    int pepsicount=0; // 펩시 총 건수 변수
 
     //php데이터
     private static String IP_ADDRESS = "211.211.158.42/yongrun/svm"; //php파일 주소
@@ -175,8 +175,8 @@ public class CalendarFragment extends Fragment {
         cidarnum = (TextView) rootView.findViewById(R.id.cidarnum);
         fantanum = (TextView) rootView.findViewById(R.id.fantanum);
         fantamoney = (TextView) rootView.findViewById(R.id.fantamoney);
-        mountinduenum = (TextView) rootView.findViewById(R.id.mountinduenum);
-        mountinduemoney = (TextView) rootView.findViewById(R.id.mountinduemoney);
+        pepsinum = (TextView) rootView.findViewById(R.id.pepsinum);
+        pepsimoney = (TextView) rootView.findViewById(R.id.pepsimoney);
 
 
 //-----------PHP부분-----------------------------------------------------------------------------------------------------------------
@@ -1546,9 +1546,9 @@ private class GetData extends AsyncTask<String, Void, String> {
 
             //원형서킷안에 데이터들을 추가한다. 여기서 php파일에서 받아온 데이터를 저장한 변수들을 넣어논다.
             yValues.add(new PieEntry(Math.round(cocacount),"코카콜라"));
-            yValues.add(new PieEntry(Math.round(cidarcount),"사이다"));
+            yValues.add(new PieEntry(Math.round(cidarcount),"스프라이트"));
             yValues.add(new PieEntry(Math.round(fantacount),"환타"));
-            yValues.add(new PieEntry(Math.round(mountincount),"마운틴 듀"));
+            yValues.add(new PieEntry(Math.round(pepsicount),"펩시"));
 
             Description description = new Description();
             description.setText("카테고리 별 분석"); //라벨
@@ -1600,13 +1600,13 @@ private class GetData extends AsyncTask<String, Void, String> {
             SVMtotalmoney=0; // 자판기 총 금액 변수
             SVMtotalcount=0; // 자판기 총 건수 변수
             cocatotalmoney = 0; // 코카콜라 총 금액 변수
-            cidartotalmoney = 0; // 사이다 총 금액 변수
+            cidartotalmoney = 0; // 스프라이트 총 금액 변수
             fantatotalmoney = 0; // 환타 총 금액 변수
-            mountintotalmoney = 0; // 마운틴듀 총 금액 변수
+            pepsitotalmoney = 0; // 펩시 총 금액 변수
             cocacount=0; // 코카콜라 총 건수 변수
-            cidarcount=0; // 사이다 총 건수 변수
+            cidarcount=0; // 스프라이트 총 건수 변수
             fantacount=0; // 환타 총 건수 변수
-            mountincount=0; // 마운틴 듀 총 건수 변수
+            pepsicount=0; // 펩시 총 건수 변수
 
         }
     }
@@ -1740,19 +1740,19 @@ private class GetData extends AsyncTask<String, Void, String> {
                                 if(TD_DRCODE.equals("CocaCola")){
                                     cocatotalmoney = cocatotalmoney+1200;
                                     cocacount = cocacount +1;
-                                }else if (TD_DRCODE.equals("Chilsung Cider")){
+                                }else if (TD_DRCODE.equals("Sprite")){
                                     cidartotalmoney = cidartotalmoney+1100;
                                     cidarcount = cidarcount +1;
                                 }else if (TD_DRCODE.equals("Fanta Orange")){
                                     fantatotalmoney = fantatotalmoney+1000;
                                     fantacount = fantacount +1;
-                                }else if (TD_DRCODE.equals("Mountain Dew")){
-                                    mountintotalmoney = mountintotalmoney+1500;
-                                    mountincount = mountincount +1;
+                                }else if (TD_DRCODE.equals("Pepsi")){
+                                    pepsitotalmoney = pepsitotalmoney+1500;
+                                    pepsicount = pepsicount +1;
                                 }
                                 //총금액과 총건수를 각 음료의 금액과 건수로 합친다.
-                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
-                                SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + pepsitotalmoney;
+                                SVMtotalcount= fantacount + cocacount + cidarcount + pepsicount;
 
                             }
                             break;
@@ -1762,18 +1762,18 @@ private class GetData extends AsyncTask<String, Void, String> {
                                 if(TD_DRCODE.equals("CocaCola")){
                                     cocatotalmoney = cocatotalmoney+1200;
                                     cocacount = cocacount +1;
-                                }else if (TD_DRCODE.equals("Chilsung Cider")){
+                                }else if (TD_DRCODE.equals("Sprite")){
                                     cidartotalmoney = cidartotalmoney+1100;
                                     cidarcount = cidarcount +1;
                                 }else if (TD_DRCODE.equals("Fanta Orange")){
                                     fantatotalmoney = fantatotalmoney+1000;
                                     fantacount = fantacount +1;
-                                }else if (TD_DRCODE.equals("Mountain Dew")){
-                                    mountintotalmoney = mountintotalmoney+1500;
-                                    mountincount = mountincount +1;
+                                }else if (TD_DRCODE.equals("Pepsi")){
+                                    pepsitotalmoney = pepsitotalmoney+1500;
+                                    pepsicount = pepsicount +1;
                                 }
-                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
-                                SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + pepsitotalmoney;
+                                SVMtotalcount= fantacount + cocacount + cidarcount + pepsicount;
 
                             }
                             break;
@@ -1783,18 +1783,18 @@ private class GetData extends AsyncTask<String, Void, String> {
                                 if(TD_DRCODE.equals("CocaCola")){
                                     cocatotalmoney = cocatotalmoney+1200;
                                     cocacount = cocacount +1;
-                                }else if (TD_DRCODE.equals("Chilsung Cider")){
+                                }else if (TD_DRCODE.equals("Sprite")){
                                     cidartotalmoney = cidartotalmoney+1100;
                                     cidarcount = cidarcount +1;
                                 }else if (TD_DRCODE.equals("Fanta Orange")){
                                     fantatotalmoney = fantatotalmoney+1000;
                                     fantacount = fantacount +1;
-                                }else if (TD_DRCODE.equals("Mountain Dew")){
-                                    mountintotalmoney = mountintotalmoney+1500;
-                                    mountincount = mountincount +1;
+                                }else if (TD_DRCODE.equals("Pepsi")){
+                                    pepsitotalmoney = pepsitotalmoney+1500;
+                                    pepsicount = pepsicount +1;
                                 }
-                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
-                                SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + pepsitotalmoney;
+                                SVMtotalcount= fantacount + cocacount + cidarcount + pepsicount;
 
                             }
                             break;
@@ -1804,18 +1804,18 @@ private class GetData extends AsyncTask<String, Void, String> {
                                 if(TD_DRCODE.equals("CocaCola")){
                                     cocatotalmoney = cocatotalmoney+1200;
                                     cocacount = cocacount +1;
-                                }else if (TD_DRCODE.equals("Chilsung Cider")){
+                                }else if (TD_DRCODE.equals("Sprite")){
                                     cidartotalmoney = cidartotalmoney+1100;
                                     cidarcount = cidarcount +1;
                                 }else if (TD_DRCODE.equals("Fanta Orange")){
                                     fantatotalmoney = fantatotalmoney+1000;
                                     fantacount = fantacount +1;
-                                }else if (TD_DRCODE.equals("Mountain Dew")){
-                                    mountintotalmoney = mountintotalmoney+1500;
-                                    mountincount = mountincount +1;
+                                }else if (TD_DRCODE.equals("Pepsi")){
+                                    pepsitotalmoney = pepsitotalmoney+1500;
+                                    pepsicount = pepsicount +1;
                                 }
-                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
-                                SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + pepsitotalmoney;
+                                SVMtotalcount= fantacount + cocacount + cidarcount + pepsicount;
 
                             }
                             break;
@@ -1825,18 +1825,18 @@ private class GetData extends AsyncTask<String, Void, String> {
                                 if(TD_DRCODE.equals("CocaCola")){
                                     cocatotalmoney = cocatotalmoney+1200;
                                     cocacount = cocacount +1;
-                                }else if (TD_DRCODE.equals("Chilsung Cider")){
+                                }else if (TD_DRCODE.equals("Sprite")){
                                     cidartotalmoney = cidartotalmoney+1100;
                                     cidarcount = cidarcount +1;
                                 }else if (TD_DRCODE.equals("Fanta Orange")){
                                     fantatotalmoney = fantatotalmoney+1000;
                                     fantacount = fantacount +1;
-                                }else if (TD_DRCODE.equals("Mountain Dew")){
-                                    mountintotalmoney = mountintotalmoney+1500;
-                                    mountincount = mountincount +1;
+                                }else if (TD_DRCODE.equals("Pepsi")){
+                                    pepsitotalmoney = pepsitotalmoney+1500;
+                                    pepsicount = pepsicount +1;
                                 }
-                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
-                                SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + pepsitotalmoney;
+                                SVMtotalcount= fantacount + cocacount + cidarcount + pepsicount;
 
                             }
                             break;
@@ -1846,18 +1846,18 @@ private class GetData extends AsyncTask<String, Void, String> {
                                 if(TD_DRCODE.equals("CocaCola")){
                                     cocatotalmoney = cocatotalmoney+1200;
                                     cocacount = cocacount +1;
-                                }else if (TD_DRCODE.equals("Chilsung Cider")){
+                                }else if (TD_DRCODE.equals("Sprite")){
                                     cidartotalmoney = cidartotalmoney+1100;
                                     cidarcount = cidarcount +1;
                                 }else if (TD_DRCODE.equals("Fanta Orange")){
                                     fantatotalmoney = fantatotalmoney+1000;
                                     fantacount = fantacount +1;
-                                }else if (TD_DRCODE.equals("Mountain Dew")){
-                                    mountintotalmoney = mountintotalmoney+1500;
-                                    mountincount = mountincount +1;
+                                }else if (TD_DRCODE.equals("Pepsi")){
+                                    pepsitotalmoney = pepsitotalmoney+1500;
+                                    pepsicount = pepsicount +1;
                                 }
-                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + mountintotalmoney;
-                                SVMtotalcount= fantacount + cocacount + cidarcount + mountincount;
+                                SVMtotalmoney= fantatotalmoney + cocatotalmoney + cidartotalmoney + pepsitotalmoney;
+                                SVMtotalcount= fantacount + cocacount + cidarcount + pepsicount;
 
                             }
                             break;
@@ -1874,24 +1874,24 @@ private class GetData extends AsyncTask<String, Void, String> {
                         cocacolamoney.setText(0 + "원");
                         cidarmoney.setText(0 + "원");
                         fantamoney.setText(0 + "원");
-                        mountinduemoney.setText(0 + "원");
+                        pepsimoney.setText(0 + "원");
 
                         cocacolanum.setText(0+"건");
                         cidarnum.setText(0+"건");
                         fantanum.setText(0+"건");
-                        mountinduenum.setText(0+"건");
+                        pepsinum.setText(0+"건");
                     }else if( SVMtotalmoney != 0 ){
                         totalmoneyshow.setText(moneyFormat.format(SVMtotalmoney)+"원");
                         totalnumbershow.setText(SVMtotalcount+"건");
                         cocacolamoney.setText(moneyFormat.format(cocatotalmoney) + "원");
                         cidarmoney.setText(moneyFormat.format(cidartotalmoney) + "원");
                         fantamoney.setText(moneyFormat.format(fantatotalmoney) + "원");
-                        mountinduemoney.setText(moneyFormat.format(mountintotalmoney) + "원");
+                        pepsimoney.setText(moneyFormat.format(pepsitotalmoney) + "원");
 
                         cocacolanum.setText(cocacount+"건");
                         cidarnum.setText(cidarcount+"건");
                         fantanum.setText(fantacount+"건");
-                        mountinduenum.setText(mountincount+"건");
+                        pepsinum.setText(pepsicount+"건");
                     }
 
 
