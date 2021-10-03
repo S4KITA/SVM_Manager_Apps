@@ -3,15 +3,10 @@ package com.example.svmmanager.fragment;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,12 +24,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.applandeo.materialcalendarview.CalendarView;
-import com.applandeo.materialcalendarview.EventDay;
 import com.example.svmmanager.R;
 import com.example.svmmanager.calender.EventDecorator;
 import com.example.svmmanager.calender.OneDayDecorator;
@@ -42,35 +34,22 @@ import com.example.svmmanager.calender.SaturdayDecorator;
 import com.example.svmmanager.calender.SundayDecorator;
 import com.example.svmmanager.pay.PayAdapter;
 import com.example.svmmanager.pay.PayData;
-import com.example.svmmanager.piechart.CustomMarkerView;
-import com.example.svmmanager.piechart.MyValueFormatter;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
-import com.github.mikephil.charting.formatter.DefaultValueFormatter;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.formatter.LargeValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.formatter.StackedValueFormatter;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.CalendarMode;
-import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -81,7 +60,6 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -92,7 +70,7 @@ import java.util.concurrent.Executors;
 import static android.graphics.Typeface.*;
 
 //dd
-public class BottomNavigationFragment3 extends Fragment {
+public class CalendarFragment extends Fragment {
 
     //자판기 음료 원형서킷으로 보여주기 위한 변수
     PieChart pieChart;
@@ -171,7 +149,7 @@ public class BottomNavigationFragment3 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //viewGroup변수를 통해서 프래그먼트에 레이아웃 배치
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_bottomnavigation3, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_calendar, container, false);
 
         //오늘 날짜를 보여주게하는 변수
         datenow = (TextView) rootView.findViewById(R.id.datenow);
@@ -1502,7 +1480,7 @@ public class BottomNavigationFragment3 extends Fragment {
             }
 */
             //addDecorator를 활용하여 EventDecorator에서 정의한 도트를 해당 날짜에 정의한다.
-            calendershow.addDecorator(new EventDecorator(Color.RED, calendarDays, BottomNavigationFragment3.this));
+            calendershow.addDecorator(new EventDecorator(Color.RED, calendarDays, CalendarFragment.this));
         }
 
 

@@ -1,11 +1,9 @@
 package com.example.svmmanager.calender;
 
-import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import android.widget.TextView;
 
 import com.example.svmmanager.R;
-import com.example.svmmanager.fragment.BottomNavigationFragment3;
+import com.example.svmmanager.fragment.CalendarFragment;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
@@ -20,7 +18,7 @@ public class EventDecorator implements DayViewDecorator {
     private int color;
     private HashSet<CalendarDay> dates;
 
-    public EventDecorator(int color, Collection<CalendarDay> dates, BottomNavigationFragment3 context) {
+    public EventDecorator(int color, Collection<CalendarDay> dates, CalendarFragment context) {
         drawable = context.getResources().getDrawable(R.drawable.toptextview);
         //totalmoney = context.getResources().getText()
         this.color = color;

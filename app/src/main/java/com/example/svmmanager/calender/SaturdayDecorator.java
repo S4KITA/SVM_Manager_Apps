@@ -3,7 +3,6 @@ package com.example.svmmanager.calender;
 import android.graphics.Color;
 import android.text.style.ForegroundColorSpan;
 
-import com.example.svmmanager.fragment.BottomNavigationFragment3;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
