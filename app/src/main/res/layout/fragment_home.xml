@@ -161,17 +161,17 @@
 
 
                             <TextView
-                                android:background="@drawable/count_text"
                                 android:id="@+id/mTextViewSpriteStock"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
+                                android:layout_marginLeft="1dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/count_text"
                                 android:fontFamily="@font/notosanscjkkrmedium"
                                 android:gravity="center"
-                                android:textColor="#000000"
-                                android:layout_weight="1"
-                                android:layout_marginLeft="1dp"
                                 android:text="알 수 없음"
+                                android:textColor="#000000"
                                 android:textSize="13dp" />
                         </LinearLayout>
                     </LinearLayout>
