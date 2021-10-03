@@ -96,7 +96,7 @@ public class BottomNavigationFragment3 extends Fragment {
 
     //자판기 음료 원형서킷으로 보여주기 위한 변수
     PieChart pieChart;
-
+//
     //날짜 비교하기 위한 변수
     String firstcaldata, lastcaldata;
 
