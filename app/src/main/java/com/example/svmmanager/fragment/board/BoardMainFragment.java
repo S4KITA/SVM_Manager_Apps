@@ -12,10 +12,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -45,17 +48,22 @@ public class BoardMainFragment extends Fragment {
     private String sanswerdate; //게시글 답변 일자
     private String spostcode;   //게시글 코드
 
-    //작성자 글
+    // 작성자 글
     private TextView nickname;
     private TextView contents;
     private TextView date;
     private TextView title;
 
-    //관리자 답변
-    private TextView ManagerName;
+    // 관리자 답변
+    private ConstraintLayout managerlayout;
     private TextView answer;
     private TextView answerdate;
     ImageView imgManagerProfile;
+
+    // 답변 작성
+    private ConstraintLayout writelayout;
+    private EditText mEditTextManager;
+    private Button mButtonSubmit;
 
     private TextView BtnDelete;
 
@@ -77,11 +85,16 @@ public class BoardMainFragment extends Fragment {
         date = rootView.findViewById(R.id.txtCommentDate);
         title = rootView.findViewById(R.id.txtCommentTitle);
 
-        //관리자
+        // 관리자
         answer = rootView.findViewById(R.id.txtManagerComments);
         answerdate = rootView.findViewById(R.id.txtManagerCommentDate);
         imgManagerProfile = rootView.findViewById(R.id.imgManagerProfile);
-        ManagerName = rootView.findViewById(R.id.ManagerName);
+        managerlayout = rootView.findViewById(R.id.managerlayout);
+
+        // 관리자 답변 작성 기능.
+        writelayout = rootView.findViewById(R.id.writelayout);
+        mEditTextManager = rootView.findViewById(R.id.mEditTextManager);
+        mButtonSubmit = rootView.findViewById(R.id.mButtonSubmit);
 
         BtnDelete = rootView.findViewById(R.id.BtnDelete);
 
@@ -99,24 +112,38 @@ public class BoardMainFragment extends Fragment {
             contents.setText(scontents);
             date.setText(sdate);
             title.setText(stitle);
-/*
+
             if (!(sanswer.equals("null") || sanswer.equals("")))    // 답변 내용이 있으면
             {
                 answer.setVisibility(View.VISIBLE);                 // 보이게 하기
                 answerdate.setVisibility(View.VISIBLE);         // 보이게 하기
                 imgManagerProfile.setVisibility(View.VISIBLE);  // 보이게 하기
-                ManagerName.setVisibility(View.VISIBLE);    // 보이게 하기
 
+                managerlayout.setVisibility(View.VISIBLE);
                 answer.setText(sanswer);
                 answerdate.setText(sanswerdate);
-            } else {
-                answer.setVisibility(View.VISIBLE);     // 보이게 하기
-                answer.setText("");
-                answer.setTypeface(null, Typeface.BOLD_ITALIC);
-            }
-*/
-        }
 
+            } else {
+                writelayout.setVisibility(View.VISIBLE);
+
+                mButtonSubmit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        if (!(mEditTextManager.getText().equals("") || mEditTextManager.getText().equals(null)))
+                            AnswerInsert(mEditTextManager.getText().toString());
+
+                        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                        BoardFragment boardFragment = new BoardFragment();
+
+                        transaction.replace(R.id.nav_host_fragment, boardFragment).commit();
+
+                        Toast.makeText(getActivity(), "답변이 등록되었습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            }
+        }
 
 /*
         //게시글 수정
@@ -139,7 +166,7 @@ public class BoardMainFragment extends Fragment {
 
             }
         });
-        */
+*/
 
 
         //게시글 삭제
@@ -200,9 +227,6 @@ public class BoardMainFragment extends Fragment {
         return rootView;
     }
 
-    private void HideButton() {
-        BtnDelete.setVisibility(View.INVISIBLE);
-    }
 
     private class GetData extends AsyncTask<String, Void, String> {
 
@@ -348,7 +372,6 @@ public class BoardMainFragment extends Fragment {
                         answer.setVisibility(View.VISIBLE);
                         answerdate.setVisibility(View.VISIBLE);
                         imgManagerProfile.setVisibility(View.VISIBLE);
-                        ManagerName.setVisibility(View.VISIBLE);
 
                         answer.setText(POST_ANSWER_CONTENTS);
                         answerdate.setText(POST_ANSWER_DATE);
@@ -367,6 +390,87 @@ public class BoardMainFragment extends Fragment {
             Log.d(TAG, "showResult : ", e);
         }
 
+    }
+
+    // 답변 입력
+    class InsertData extends AsyncTask<String, Void, String> {
+        ProgressDialog progressDialog;
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = ProgressDialog.show(getActivity(), "Please Wait", null, true, true);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            progressDialog.dismiss();
+            Log.d(TAG, "POST response  - " + result);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String POST_ANSWER_CONTENTS = (String) params[1];
+            String POST_CODE = (String) params[2];
+            String serverURL = (String) params[0];
+
+            String postParameters = "POST_ANSWER_CONTENTS=" + POST_ANSWER_CONTENTS + "&POST_CODE=" + POST_CODE;
+
+            try {
+
+                URL url = new URL(serverURL);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+
+
+                httpURLConnection.setReadTimeout(5000);
+                httpURLConnection.setConnectTimeout(5000);
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.connect();
+
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                outputStream.write(postParameters.getBytes("UTF-8"));
+                outputStream.flush();
+                outputStream.close();
+
+
+                int responseStatusCode = httpURLConnection.getResponseCode();
+                Log.d(TAG, "POST response code - " + responseStatusCode);
+
+                InputStream inputStream;
+                if (responseStatusCode == HttpURLConnection.HTTP_OK) {
+                    inputStream = httpURLConnection.getInputStream();
+                } else {
+                    inputStream = httpURLConnection.getErrorStream();
+                }
+
+
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                StringBuilder sb = new StringBuilder();
+                String line = null;
+
+                while ((line = bufferedReader.readLine()) != null) {
+                    sb.append(line);
+                }
+                bufferedReader.close();
+
+                return sb.toString();
+
+            } catch (Exception e) {
+
+                Log.d(TAG, "InsertData: Error ", e);
+
+                return new String("Error: " + e.getMessage());
+            }
+
+        }
     }
 
     class DeleteData extends AsyncTask<String, Void, String> {
@@ -445,6 +549,11 @@ public class BoardMainFragment extends Fragment {
             }
 
         }
+    }
+
+    public void AnswerInsert(String answer) {
+        InsertData insertData = new InsertData();
+        insertData.execute("http://" + IP_ADDRESS + "/POST_ANSWER_ANDRIOD.php", answer, spostcode);
     }
 
 

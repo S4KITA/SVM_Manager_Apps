@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rvCommentItem"
@@ -64,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/colorWhite"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/nestedscroll"
             app:layout_constraintTop_toTopOf="@id/nestedscroll">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -169,6 +170,7 @@
                 android:id="@+id/managerlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/userlayout">
@@ -188,7 +190,6 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_marginStart="16dp"
-                    android:visibility="gone"
                     android:layout_marginTop="10dp"
                     android:src="@drawable/circle"
                     app:layout_constraintStart_toStartOf="parent"
@@ -203,8 +204,9 @@
                     android:layout_marginBottom="15dp"
                     android:fontFamily="@font/notosanscjkkrmedium"
                     android:lineSpacingExtra="6sp"
+                    app:layout_constraintTop_toBottomOf="@id/view3"
+                    app:layout_constraintLeft_toRightOf="@+id/imgManagerProfile"
                     android:text="관리자"
-                    android:visibility="gone"
                     android:textColor="#212529"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toTopOf="@+id/txtManagerComments"
@@ -220,7 +222,6 @@
                     android:fontFamily="@font/notosanscjkkrregular"
                     android:text="관리자 답변"
                     android:textColor="#212529"
-                    android:visibility="gone"
                     android:textSize="15sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/imgManagerProfile" />
@@ -230,7 +231,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:visibility="gone"
+
                     android:layout_marginTop="15dp"
                     android:lineSpacingExtra="6sp"
                     android:text="날짜"
@@ -244,13 +245,72 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="10dp"
-                    android:visibility="invisible"
+
                     android:layout_marginBottom="10dp"
                     android:background="#e3e3e3"
                     app:layout_constraintTop_toBottomOf="@+id/txtManagerCommentDate" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:background="@color/colorWhite"
+                android:id="@+id/writelayout"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="90dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/managerlayout"
+                app:layout_constraintBottom_toBottomOf="@+id/constraint_entire" >
+
+                <View
+                    android:id="@+id/writeview"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="#e3e3e3"
+                    app:layout_constraintTop_toTopOf="@id/writelayout" />
+
+                <EditText
+                    android:id="@+id/mEditTextManager"
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:padding="15dp"
+                    android:background="@drawable/text_radius"
+                    android:hint="답변을 입력해주세요."
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/mButtonSubmit"
+                    app:layout_constraintTop_toBottomOf="@+id/writeview"
+                    app:layout_constraintVertical_bias="0.12" />
+
+                <Button
+                    android:id="@+id/mButtonSubmit"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="30dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginLeft="12dp"
+                    android:textColor="#000000"
+                    android:background="@drawable/round_button"
+                    android:text="완료"
+                    android:textSize="17dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/mEditTextManager"
+                    app:layout_constraintTop_toBottomOf="@+id/writeview"
+                    app:layout_constraintVertical_bias="0.12"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
