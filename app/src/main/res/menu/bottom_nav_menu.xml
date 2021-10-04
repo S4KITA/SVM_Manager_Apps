@@ -3,17 +3,17 @@
 
     <item
             android:id="@+id/frag_navigation_board"
-            android:icon="@drawable/tabbar_story_selected_btn"
+            android:icon="@drawable/clipboard_edit_outline"
             android:title="게시판"/>
 
     <item
             android:id="@+id/frag_navigation_home"
-            android:icon="@drawable/tabbar_home_selected_btn"
+            android:icon="@drawable/home_outline"
             android:title="홈"/>
 
     <item
             android:id="@+id/frag_navigation_calendar"
-            android:icon="@drawable/tabbar_profile_selected_btn"
+            android:icon="@drawable/calendar_multiselect"
             android:title="캘린더"/>
 
 </menu>
