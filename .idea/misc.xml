@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/YOON/AndroidStudioProjects/SVM_Manager_Apps/app/src/main/res/drawable/nobackground_button.xml" value="0.2671875" />
+        <entry key="..\:/Users/YOON/AndroidStudioProjects/SVM_Manager_Apps/app/src/main/res/drawable/rectangle_button.xml" value="0.26510416666666664" />
+        <entry key="..\:/Users/YOON/AndroidStudioProjects/SVM_Manager_Apps/app/src/main/res/layout/fragment_boardmain.xml" value="0.4466666666666667" />
+      </map>
+    </option>
+  </component>
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$" />
   </component>

@@ -41,10 +41,6 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
         // public TextView time; 안씀
 
 
-
-
-
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 

@@ -44,7 +44,7 @@ public class BoardFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
 
 
-    private static String IP_ADDRESS = "211.211.158.42/yongrun/svm";
+    private static String IP_ADDRESS = "59.14.35.61/yongrun/svm";
     private static String TAG = "phptest";
     private String mJsonString; // JSON 파싱 값을 받아서 임시로 담는 공간.
 
@@ -118,6 +118,7 @@ public class BoardFragment extends Fragment {
         super.onResume();
         PostUpdate();
     }
+
 
 
     public void PostUpdate() {      //게시글 새로고침 메소드

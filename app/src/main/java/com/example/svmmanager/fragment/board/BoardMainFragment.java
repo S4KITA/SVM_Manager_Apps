@@ -65,13 +65,23 @@ public class BoardMainFragment extends Fragment {
     private EditText mEditTextManager;
     private Button mButtonSubmit;
 
+    // 게시글 삭제
     private TextView BtnDelete;
+
+    // 답변 수정 삭제
+    private EditText EdtManagerComments;
+    private TextView BtnManagerEdit;
+    private TextView BtnManagerDelete;
+    private TextView Seperate;
+
+    // 수정 완료 버튼
+    private Button mButtonEditComplete;
 
     private static String TAG = "게시글 보기";
 
     private String mJsonString;
 
-    private static String IP_ADDRESS = "211.211.158.42/yongrun/svm";
+    private static String IP_ADDRESS = "59.14.35.61/yongrun/svm";
 
 
     @Override
@@ -96,7 +106,19 @@ public class BoardMainFragment extends Fragment {
         mEditTextManager = rootView.findViewById(R.id.mEditTextManager);
         mButtonSubmit = rootView.findViewById(R.id.mButtonSubmit);
 
+        // 게시글 삭제
         BtnDelete = rootView.findViewById(R.id.BtnDelete);
+
+        // 답변글 수정 , 삭제
+        EdtManagerComments = rootView.findViewById(R.id.EdtManagerComments);
+        BtnManagerEdit = rootView.findViewById(R.id.BtnManagerEdit);
+        BtnManagerDelete = rootView.findViewById(R.id.BtnManagerDelete);
+
+        // 경계선
+        Seperate = rootView.findViewById(R.id.Seperate);
+
+        // 수정 완료 버튼
+        mButtonEditComplete = rootView.findViewById(R.id.mButtonEditComplete);
 
         if (getArguments() != null) {
             spostcode = getArguments().getString("post_code"); // 게시글 코드
@@ -122,6 +144,84 @@ public class BoardMainFragment extends Fragment {
                 managerlayout.setVisibility(View.VISIBLE);
                 answer.setText(sanswer);
                 answerdate.setText(sanswerdate);
+
+                BtnManagerEdit.setVisibility(View.VISIBLE);
+                BtnManagerDelete.setVisibility(View.VISIBLE);
+                Seperate.setVisibility(View.VISIBLE);
+
+                BtnManagerEdit.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+
+
+                        EdtManagerComments.setVisibility(View.VISIBLE);
+                        answer.setVisibility(View.INVISIBLE);
+                        mButtonEditComplete.setVisibility(View.VISIBLE);
+
+                        // 기존 답변 내용 가져오기.
+                        EdtManagerComments.setText( answer.getText().toString() );
+
+                        mButtonEditComplete.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (!(EdtManagerComments.getText().equals("") || EdtManagerComments.getText().equals(null)))
+                                    AnswerEdit(EdtManagerComments.getText().toString());
+
+                                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                BoardFragment boardFragment = new BoardFragment();
+
+                                transaction.replace(R.id.nav_host_fragment, boardFragment).commit();
+
+                                Toast.makeText(getActivity(), "답변이 수정되었습니다.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+
+                    }
+                });
+
+                //답변글 삭제
+                BtnManagerDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        // App 사용자 ID와 글 작성자 ID가 일치
+                        AlertDialog.Builder dlg = new AlertDialog.Builder(getActivity(), R.style.MyDialogTheme);
+                        dlg.setTitle("관리자 답변 삭제");
+                        dlg.setMessage("답변을 삭제하시겠습니까 ? ");
+                        dlg.setIcon(R.drawable.delete);
+
+                        dlg.setNegativeButton("아니요", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+                        dlg.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getActivity(), "답변이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+
+                                //답변 삭제 코드
+                                AnswerDelete();
+                                //////////////////
+
+                                //게시글 삭제 후 게시글 열람 창에서 나가기.
+                                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                BoardFragment boardFragment = new BoardFragment();
+
+                                transaction.replace(R.id.nav_host_fragment, boardFragment).commit();
+                            }
+
+                        });
+
+                        AlertDialog alertDialog = dlg.create();
+                        dlg.show();
+
+
+                    }
+                });
 
             } else {
                 writelayout.setVisibility(View.VISIBLE);
@@ -209,6 +309,8 @@ public class BoardMainFragment extends Fragment {
 
             }
         });
+
+
 
 
         /// 뒤로가기 버튼
@@ -550,10 +652,22 @@ public class BoardMainFragment extends Fragment {
 
         }
     }
-
+    // 답변 입력
     public void AnswerInsert(String answer) {
         InsertData insertData = new InsertData();
         insertData.execute("http://" + IP_ADDRESS + "/POST_ANSWER_ANDRIOD.php", answer, spostcode);
+    }
+
+    // 답변 수정
+    public void AnswerEdit(String answer) {
+        InsertData insertData = new InsertData();
+        insertData.execute("http://" + IP_ADDRESS + "/POST_ANSWER_MODIFY_ANDRIOD.php", answer, spostcode);
+    }
+
+    // 답변 삭제
+    public void AnswerDelete() {
+        DeleteData deleteAnswer = new DeleteData();
+        deleteAnswer.execute("http://" + IP_ADDRESS + "/POST_ANSWER_DELETE_ANDRIOD.php", spostcode);
     }
 
 

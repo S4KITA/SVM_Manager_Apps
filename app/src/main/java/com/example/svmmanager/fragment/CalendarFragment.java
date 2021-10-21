@@ -136,7 +136,7 @@ public class CalendarFragment extends Fragment {
     int pepsicount=0; // 펩시 총 건수 변수
 
     //php데이터
-    private static String IP_ADDRESS = "211.211.158.42/yongrun/svm"; //php파일 주소
+    private static String IP_ADDRESS = "59.14.35.61/yongrun/svm"; //php파일 주소
     private static String TAG = "phptest"; //log test
 
     //php파일의 데이터를 담을 변수들들
